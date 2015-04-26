@@ -2,89 +2,15 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtDeclarative import *
 from PySide import QtUiTools
-import csv 
-import math
 
 import sys
+ 
 from tools.core import * 
+import csv 
+from debian.changelog import cvs_keyword
+from gi.overrides.keysyms import doubbaselinedot
+import webbrowser
 
-
-class BOMQuoteData():
-    def __init__(self, parent=None):
-        self.bomData = []
-    
-    def getBomData(self):
-        return self.bomData
-    
-    def doPricing(self):
-        for bom in self.bomData:
-            qty = bom['menge'];
-            for quote in bom['quotes']:
-                pb = quote['pricebreaks']
-                prices = quote['prices']
-                minVPE = quote['minVPE']
-                realPrice = getRealPrice(qty,minVPE,prices,pb);
-                opt_price = getBestPrice(realPrice, tolerance=0.5)
-                if 0:
-                    print('sku: '+str(quote['sku']))
-                    print('prces: '+str(quote['prices']))         
-                    print('pbs:' + str(quote['pricebreaks']))
-                    print('qty:' + str(qty))                  
-                    print('minVPE:' + str(minVPE))
-                    print(opt_price)
-                    print('\n')
-                quote['opt_price'] = opt_price['price']
-                quote['opt_qty'] = opt_price['qty']
-                
-    def loadFromCSV(self,path):
-        csvreader = csv.reader(open("bomquote_farnell_rs.csv", "rb"), delimiter="|")
-        for row in csvreader: 
-            bomDataSet = {}
-            if row[0] == 'orig':
-                bomDataSet['menge'] = int(row[1])
-                bomDataSet['mpn'] = row[3]
-                bomDataSet['manufacturer'] = row[4]
-                bomDataSet['ref'] = row[2]
-                bomDataSet['description'] = row[5]
-                bomDataSet['quotes'] = []
-                self.bomData.append(bomDataSet);
-            else:
-                quoteDataSet={}
-                quoteDataSet['sku'] = row[4]
-                stock = row[11]
-                if stock.isdigit():
-                    stock = int(stock);
-                    stock = str(stock)
-                quoteDataSet['stock'] = stock
-                USA = row[12]
-                if USA == 'nichtAusUSA':
-                    quoteDataSet['usa'] = 0
-                else:
-                    quoteDataSet['usa'] = 1
-                quoteDataSet['description'] = row[7]
-                quoteDataSet['minVPE'] = row[8]
-                quoteDataSet['pricebreaks'] = []
-                quoteDataSet['prices'] = []
-                bricebreaks = row[9].strip('[] ')
-                
-                for pb in bricebreaks.split(', '):
-                    pb = float(pb)
-                    quoteDataSet['pricebreaks'].append(float(pb))
-                    
-
-                prices = row[10].strip('[] ')
-                for price in prices.split(', '):
-                    price = float(price)
-                    quoteDataSet['prices'].append(float(price))
-     
-                quoteDataSet['mpn'] = row[5]
-                quoteDataSet['manufacturer'] = row[6]
-                quoteDataSet['supplier'] = row[1]
-                quoteDataSet['checked'] = row[0]
-                quoteDataSet['url'] = row[13]
-                self.bomData[len(self.bomData)-1]['quotes'].append(quoteDataSet)
-        self.doPricing();
-        
 # Our main window
 class MainWindow(QMainWindow):
    
@@ -93,14 +19,48 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Main Window")
         self.initUI()
         self.URLS = []
-    
-        
+
+    def sigBtnExportClicked(self):
+        bqd = self.bomQuoteData.getBomData()
+        csv_farnell = csv.writer(open("farnell.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
+        csv_rs = csv.writer(open("rs.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
+        for bom in bqd:
+            for quote in bom['quotes']:
+                node = QTreeWidgetItem();
+                node = quote['node']
+                if node is not '':
+                    tree = QTreeWidgetItem();
+                    #print(quote['node'])
+                    if node.checkState(0) == Qt.Checked:
+                        if quote['supplier'] == 'Farnell':
+                            row_farnell=[int(quote['opt_qty']),quote['sku'],bom['ref']]
+                            print(row_farnell)
+                            csv_farnell.writerow(row_farnell)
+                        if quote['supplier'] == 'RS':
+                            row_rs=[int(quote['opt_qty']),quote['sku'],bom['ref']]
+                            print(row_rs)
+                            csv_rs.writerow(row_rs)
+                        
+
+    def sigTreeDoubleClicked(self,item, column):
+        index=item.toolTip(0).split(';')
+        index[0] = int(index[0])
+        index[1] = int(index[1])
+        bqd = self.bomQuoteData.getBomData()
+        print(index)
+        #bqd[index[0]]['qotes'][index[1]]
+        quote=bqd[index[0]]['quotes'][index[1]]
+        #print()
+        #import webbrowser  
+        webbrowser.open(quote['url'], new=2, autoraise=True)
+
     def initUI(self): 
         self.statusBar().showMessage('Ready')
         loader = QtUiTools.QUiLoader()
         self.ui = loader.load('gui/mainwindow.ui')
-        #treeWidget = QTreeWidget()
-        #treeWidget.setColumnCount(1)
+        self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
+        self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
+        
         if 0:
             BOMEintries = []
             for i in range(10):
@@ -112,23 +72,31 @@ class MainWindow(QMainWindow):
             BOMEintries[0].addChild(child);
     
             self.ui.treeBOM.insertTopLevelItems(0, BOMEintries)
-        self.loadBOMQuote('')
+        self.bomQuoteData = BOMQuoteData("bomquote_farnell_rs.csv")
+        self.loadBOMQuote(self.bomQuoteData)
         self.ui.show()
 
 
 
-    def loadBOMQuote(self,filePath):
-        bqd_ = BOMQuoteData(filePath);
-        bqd_.loadFromCSV(filePath);
-        bqd = bqd_.getBomData()
+    def loadBOMQuote(self,bomQuoteData):
+        bqd = bomQuoteData.getBomData()
+        #bqd = bomQuoteData.bomData;
         tree = QTreeWidget();
         tree = self.ui.treeBOM;
         tree.clear();
-        tree.setColumnCount(5)
+        tree.setColumnCount(4)
+        topNodeindex=-1
         for bom in bqd: 
+            topNodeindex += 1
             #anzahl, MPN, Manufacturer, Beschreibung, ref.
             top = QTreeWidgetItem()
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
+            top.setFlags(top.flags() | Qt.ItemIsUserCheckable)
+            top.setCheckState(0,Qt.Unchecked);
+            top.setBackground(0,QBrush(Qt.lightGray))
+            top.setBackground(1,QBrush(Qt.lightGray))
+            top.setBackground(2,QBrush(Qt.lightGray))
+            top.setBackground(3,QBrush(Qt.lightGray))
             refs = ''
             kommacounter=0
             for ref in bom['ref'].split(', '):
@@ -147,20 +115,25 @@ class MainWindow(QMainWindow):
                 #top.setFirstItemColumnSpanned 
             self.ui.treeBOM.addTopLevelItem(top)
             lowestPrice = sys.maxint
-            #cheapestChild = None
+            childindex=-1
             for quote in bom['quotes']:
+                childindex += 1
                 if quote['sku'] == '-1':
                     continue
-                #print(quote)
+                if quote['usa'] == 1:
+                    continue
+                #should be done with checkbox once
                 child = QTreeWidgetItem()
                 child.setText(0, quote['supplier']) #'supplier'
                 child.setText(1, quote['sku']) #'SUK'
+                child.setToolTip(0,str(topNodeindex)+';'+str(childindex))
+                quote['node'] = child
                 USA = quote['usa']
                 if USA :
                     USA = '\naus Lager USA'
                 else:
                     USA = ''
-
+                #print(quote)
                 child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
                 child.setText(3, quote['description']+'\nMPN: '+quote['mpn']+'\nManuf.: '+quote['manufacturer']) #'beschreibung+mpn+manufacturer'
                 child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
@@ -170,14 +143,12 @@ class MainWindow(QMainWindow):
                     cheapestChild = child
                 top.addChild(child)
                 top.setExpanded(True)
-            
+
             cheapestChild.setCheckState(0,Qt.Checked);
+            
+            
 
-                    
 
-                
-
-        
         
 if __name__ == '__main__':
     # Create the Qt Application

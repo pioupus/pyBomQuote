@@ -5,6 +5,7 @@ Created on 26.04.2015
 '''
 import math
 import sys
+import csv 
 
 def getBestPrice(realPrice,tolerance=0.0):
     if realPrice[0]['price']+tolerance < realPrice[1]['price']:
@@ -56,4 +57,87 @@ def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks):
             realPrice[1]['qty'] = pricebreaks[pindex]
 
     return realPrice
+
+
+
+class BOMQuoteData():
+    def __init__(self, csvPath=None, parent=None):
+        self.bomData = []
+        if csvPath is not None:
+            self.loadFromCSV(csvPath)
+            
+    
+    def getBomData(self):
+        return self.bomData
+    
+    def doPricing(self):
+        for bom in self.bomData:
+            qty = bom['menge'];
+            for quote in bom['quotes']:
+                pb = quote['pricebreaks']
+                prices = quote['prices']
+                minVPE = quote['minVPE']
+                realPrice = getRealPrice(qty,minVPE,prices,pb);
+                opt_price = getBestPrice(realPrice, tolerance=0.5)
+                if 0:
+                    print('sku: '+str(quote['sku']))
+                    print('prces: '+str(quote['prices']))         
+                    print('pbs:' + str(quote['pricebreaks']))
+                    print('qty:' + str(qty))                  
+                    print('minVPE:' + str(minVPE))
+                    print(opt_price)
+                    print('\n')
+                quote['opt_price'] = opt_price['price']
+                quote['opt_qty'] = opt_price['qty']
+                
+    def loadFromCSV(self,path):
+        csvreader = csv.reader(open(path, "rb"), delimiter="|")
+        for row in csvreader: 
+            bomDataSet = {}
+            if row[0] == 'orig':
+                bomDataSet['menge'] = int(row[1])
+                bomDataSet['mpn'] = row[3]
+                bomDataSet['manufacturer'] = row[4]
+                bomDataSet['ref'] = row[2]
+                bomDataSet['description'] = row[5]
+                bomDataSet['quotes'] = []
+                self.bomData.append(bomDataSet);
+            else:
+                quoteDataSet={}
+                quoteDataSet['sku'] = row[4]
+                stock = row[11]
+                if stock.isdigit():
+                    stock = int(stock);
+                    stock = str(stock)
+                quoteDataSet['stock'] = stock
+                USA = row[12]
+                if USA == 'nichtAusUSA':
+                    quoteDataSet['usa'] = 0
+                else:
+                    quoteDataSet['usa'] = 1
+                quoteDataSet['description'] = row[7]
+                quoteDataSet['minVPE'] = row[8]
+                quoteDataSet['pricebreaks'] = []
+                quoteDataSet['prices'] = []
+                bricebreaks = row[9].strip('[] ')
+                
+                for pb in bricebreaks.split(', '):
+                    pb = float(pb)
+                    quoteDataSet['pricebreaks'].append(float(pb))
+                    
+
+                prices = row[10].strip('[] ')
+                for price in prices.split(', '):
+                    price = float(price)
+                    quoteDataSet['prices'].append(float(price))
+     
+                quoteDataSet['mpn'] = row[5]
+                quoteDataSet['node'] = ''
+                quoteDataSet['manufacturer'] = row[6]
+                quoteDataSet['supplier'] = row[1]
+                quoteDataSet['checked'] = row[0]
+                quoteDataSet['url'] = row[13]
+                self.bomData[len(self.bomData)-1]['quotes'].append(quoteDataSet)
+        self.doPricing();
+        
     

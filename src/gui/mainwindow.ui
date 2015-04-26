@@ -45,14 +45,21 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="btnButton2">
+       <widget class="QCheckBox" name="checkBox">
         <property name="text">
-         <string>PushButton</string>
+         <string>aus USA akzeptieren</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnButton1">
+       <widget class="QPushButton" name="btnExportCarts">
+        <property name="text">
+         <string>export Warenkoerbe</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnPushButton2">
         <property name="text">
          <string>PushButton</string>
         </property>
