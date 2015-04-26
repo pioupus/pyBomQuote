@@ -1,0 +1,185 @@
+#!/usr/bin/env python
+
+import urllib2
+import re
+from bs4 import BeautifulSoup
+from string import maketrans
+
+import urllib
+import urlparse
+
+def url_fix(s, charset='utf-8'):
+    """Sometimes you get an URL by a user that just isn't a real
+    URL because it contains unsafe characters like ' ' and so on.  This
+    function can fix some of the problems in a similar way browsers
+    handle data entered by the user:
+
+    >>> url_fix(u'http://de.wikipedia.org/wiki/Elf (Begriffsklarung)')
+    'http://de.wikipedia.org/wiki/Elf%20%28Begriffskl%C3%A4rung%29'
+
+    :param charset: The target charset for the URL if the url was
+                    given as unicode string.
+    """
+    if isinstance(s, unicode):
+        s = s.encode(charset, 'ignore')
+    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
+    path = urllib.quote(path, '/%')
+    qs = urllib.quote_plus(qs, ':&=')
+    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+
+
+
+class Rs(object):
+
+    def __init__(self, MPN, lagerndeProdukte,USAProdukte):
+        headers = {
+            "User-Agent": "Wget/1.13.4 (linux-gnu)",
+            "Accept": "*/*",
+            "Connection": "keep-alive"
+        }
+        self.lagerndeProdukte = lagerndeProdukte
+        self.USAProdukte = USAProdukte
+        self.MPN = MPN
+        self.seachURL = ''
+        searchString = MPN;
+        
+        self.seachURL='http://de.rs-online.com/web/c/?searchTerm='+searchString+'&sra=oss&r=t&sort-by=P_breakPrice1&sort-order=asc&pn=1'
+        self.seachURL = url_fix(self.seachURL)
+        print(self.seachURL)
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        req = urllib2.Request(self.seachURL, None, headers = headers)
+        self.page = urllib2.urlopen(req).read()                            
+
+
+    def getPage(self):
+        return self.page
+
+    def parse(self):
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        soup = BeautifulSoup(self.page)
+        prodTable = soup.find('table', attrs={'class':'srtnListTbl'})
+        if prodTable == None:        
+            
+            sku = soup.find('span', attrs={'itemprop':'sku'})
+            if sku == None:
+                result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
+            else:
+                sku = sku.contents[0].encode('utf-8').strip()
+                mpn = soup.find('span', attrs={'itemprop':'mpn'})
+                if mpn==None:
+                    mpn = '-'
+                else:
+                    mpn = mpn.contents[0].encode('utf-8').strip()
+                
+                hersteller = soup.find('span', attrs={'itemprop':'name'}).contents[0].encode('utf-8').strip()
+                description = soup.find('div', attrs={'class':'productDetailsContainer floatRight'})
+                if description == None:
+                    description = 'Nicht verfuegbar'
+                else:
+                    description = description.find('div').contents[0].encode('utf-8').strip()
+                    description = description.translate(maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
+                minVPE = soup.find('div', attrs={'class':'addToCartRTQContainer'})
+                if minVPE == None:
+                    minVPE = '-1'
+                else: 
+                    minVPE = minVPE.find('form')
+                    minVPE = minVPE.find('div', attrs={'class':'qty'}).find('input')['value']
+                    minVPE = minVPE
+                url = soup.find('link', attrs={'rel':'canonical'})['href']
+                stock = soup.find('div', attrs={'class':'floatLeft stockMessaging availMessageDiv bottom5'})
+                if stock == None:
+                    stock = 'Nicht verfuegbar'
+                else:
+                    stock = stock.contents[0].encode('utf-8').strip()
+                result['ordercode'].append(sku);
+                result['URL'].append(url);
+                result['manufacturer'].append(hersteller);
+                result['mpn'].append(mpn);
+                result['description'].append(description);
+                result['minVPE'].append(minVPE);
+                result['stock'].append(stock);
+                result['ausUSA'].append(0);
+                #print(sku)
+                #print(mpn)
+                #print(hersteller)
+                #print(description)
+                #print(minVPE)
+                #print(stock)
+                rows = soup.find('ul', attrs={'class':'breakPricesList'})
+                if rows == None:
+                    result['pricebreaks'].append([-1])
+                    result['prices'].append([-1])
+                    #result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}                    
+                else:
+                    rows = rows.find_all('li')
+                    prices_item = []
+                    breaks_item = []
+                    for row in rows:
+                        qty = row.find('span', attrs={'itemprop':'eligibleQuantity'}).contents[0].encode('utf-8').strip()
+                        qty = int(qty)
+                        breaks_item.append(qty)
+                        price = row.find('span', attrs={'itemprop':'price'}).contents[0].encode('utf-8').strip()
+                        price = price.strip('\xe2\x82\xac ').replace(',','.')
+                        price = price.split(' ',2)[0]
+                        price = float(price)
+                       # print(price)
+                        prices_item.append(price)
+                    result['pricebreaks'].append(breaks_item)
+                    result['prices'].append(prices_item)
+                result['supplier'].append('RS');
+        else:
+            rows = prodTable.find_all('tr')
+            for row in rows:
+                description = row.find('a', attrs={'class':'tnProdDesc'}).contents[0].encode('utf-8').strip()
+                description = description.translate(maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
+                fields = row.find_all('span', attrs={'class':'labelText'})
+                url = '';
+                for field in fields:
+                    content = field.contents[0].encode('utf-8').strip()
+                    fieldname=''
+                    skufound=False
+                    if 'RS Best.' in content:
+                        skufound=True
+                        fieldname='ordercode'
+                    elif 'Marke' == content:
+                        fieldname = 'manufacturer'
+                    elif 'Herst. Teile' in content:
+                        fieldname = 'mpn'
+                    
+                    value = field.parent.find('a')
+                    if skufound:
+                        url = 'http://de.rs-online.com'+value['href']
+                    if value != None:
+                        value = value.contents[0].encode('utf-8').strip()
+                    else:
+                        value = field.parent.find('span',attrs={'class':'defaultSearchText'}).contents[0].encode('utf-8').strip()
+                   # print(fieldname+' '+value);
+                   
+                    result[fieldname].append(value);
+                    
+                minVPE = row.find().find('div',attrs={'class':'qtyBtn'})
+                if minVPE == None:
+                    minVPE = '-1'
+                    pb = -1;
+                else:
+                    minVPE = minVPE.find('input')['value']
+                    minVPE = int(minVPE)
+                    pb = minVPE
+                price = row.find('div',attrs={'class':'priceFixedCol'}).find('ul',attrs={'class':'viewDescList'}).find('span')
+                price = price.contents[0].encode('utf-8').strip()
+                price = price.strip('\xe2\x82\xac ').replace(',','.')
+                price = price.split(' ',2)[0]
+                price = float(price)
+                result['prices'].append([price])
+                result['pricebreaks'].append([pb])
+                result['description'].append(description);
+                result['minVPE'].append(minVPE);
+                result['ausUSA'].append(0);
+                result['supplier'].append('RS');
+                result['stock'].append(-1);
+                result['URL'].append(url);
+#                result['manufacturer'].append(hersteller);
+                
+                                         
+        print(result)  
+        return result
