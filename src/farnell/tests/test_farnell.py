@@ -12,16 +12,16 @@ class Test(unittest.TestCase):
 
 
     def test_downloadPage(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("GRM188R61H105KAALD",1,0)
 
             #self.page = farnell.getPage()
             #with open("farnell_nicht_USA.xml", "ab") as myfile:
             #    myfile.write(self.page)
-            result = farnell.parse()  
+            result = farnell.parse()
             self.assertEqual(result['minVPE'], [10, 150])
-            self.assertEqual(result['stock'], ['14588', '14588'] )
+            self.assertEqual(result['stock'], ['14308', '14308'] )
             self.assertEqual(result['supplier'], ['Farnell','Farnell'])
             self.assertEqual(result['mpn'], ['GRM188R61H105KAALD', 'GRM188R61H105KAALD'])            
             self.assertEqual(result['ausUSA'], [0,0])
@@ -30,7 +30,7 @@ class Test(unittest.TestCase):
             self.assertEqual(result['pricebreaks'], [[10.0, 50.0, 100.0, 500.0], [100.0, 500.0, 1000.0]])
 
     def test_downloadPageUSABestand(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("TNPW0805101KBETA",1,0)
             #self.page = farnell.getPage()
@@ -51,7 +51,7 @@ class Test(unittest.TestCase):
 
               
     def test_downloadDetailPage(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("1653195",1,0)
             #self.page = farnell.getPage()
@@ -79,7 +79,7 @@ class Test(unittest.TestCase):
 
         
     def test_downloadDetailPageUSABestand(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("1872050",1,0)
             #self.page = farnell.getPage()
@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
             self.assertEqual(result['mpn'][0], 'TNPW0805101KBETA', '')
         
     def test_downloadDetailABI(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("ABI-042-RC",1,0)
             #self.page = farnell.getPage()
@@ -131,7 +131,7 @@ class Test(unittest.TestCase):
             self.assertEqual(result['pricebreaks'], [[1.0, 250.0, 500.0, 1000.0, 5000.0]])   
             
     def test_downloadDetail20_2136_Vera(self):
-        if 0:
+        if 1:
             from farnell.core import Farnell
             farnell = Farnell("20-2136 Vero",1,0)
             #self.page = farnell.getPage()
@@ -146,6 +146,11 @@ class Test(unittest.TestCase):
             self.assertEqual(result['ordercode'], ['8731195'])
             self.assertEqual(result['prices'], [[21.47, 16.95, 12.58, 10.9]])
             self.assertEqual(result['pricebreaks'], [[1.0, 5.0, 10.0, 50.0]])                  
+    
+if __package__ is None:
+    from os import sys, path
+    searchpath = path.abspath(path.join(path.dirname( __file__ ), '..\\..'))
+    sys.path.append(searchpath)
     
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.testName']

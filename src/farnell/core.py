@@ -164,7 +164,11 @@ class Farnell(object):
                     mpn = column.find('input')['value'].encode('utf-8').strip()
                     column = row.find('td',attrs={'class':'availability'})
                     stockstr = column.find('input')['value'].encode('utf-8').strip()
-                    stock = stockstr
+                    if stockstr.isdigit():
+                        stock = int(stockstr)
+                        stock = str(stock)
+                    else:
+                        stock = stockstr
                     result['manufacturer'].append(Manufacturer);
                     result['description'].append(description);
                     result['ordercode'].append(ordercode);
