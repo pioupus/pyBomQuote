@@ -16,7 +16,7 @@ def doQuote(intable):
         for intableItem in intable:
             #print(intableItem)
             cnt = cnt+1;
-            if cnt < 67:
+            if cnt < 0:
                 continue
             
             print str(cnt) + ' of '+str(len(intable))
