@@ -68,7 +68,18 @@ class Test(unittest.TestCase):
             self.page = rs.getPage()
             with open("rs_T491B476K010A.xml", "ab") as myfile:
                 myfile.write(self.page)
-            rs.parse()                 
+            rs.parse()   
+            
+    def testSinglePage_LIS331DLH(self):
+        if 1:
+            from rs.core import Rs
+            rs = Rs("LIS331DLH",1,0)
+            self.page = rs.getPage()
+            with open("rs_LIS331DLH.xml", "ab") as myfile:
+                myfile.write(self.page)
+            rs.parse()               
+
+              
                 
 if __package__ is None:
     from os import sys, path

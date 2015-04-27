@@ -215,7 +215,7 @@ class Farnell(object):
      
                     
                     result['supplier'].append('Farnell');
-        print(result)
+        #print(result)
         return result;
     
 

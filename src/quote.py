@@ -7,54 +7,7 @@ import math
 import csv 
 
 excludeRLOrderNumbers = 1;
-maxMinVPE = 100;
-
-
-def getTotalPrice(qty,pricelist,pricebreak):
-    #pricebreak =[2,3,20]
-    #pricelist =[0.5,0.3,0.25]
-    pindex = 0;
-    priceresult = {'firstprice':[0.0,0.0],'secprice':[0.0,0.0]}
-    if not qty.isdigit():
-        return priceresult
-    else:
-        qty = float(qty)
-        #print qty
-        for pbreak in pricebreak:
-        #print pbreak
-            if float(qty) < pbreak:
-                break;
-            pindex = pindex+1;
-        if pindex == 0:
-            pindex =1;
-        #print pricebreak;
-        #print qty;
-        pb = pricebreak[pindex-1]
-        if isinstance(pb, basestring):
-            if pb.isdigit():
-                pb = int(pb)
-            
-        corrqty = pb/pricebreak[pindex-1]
-        corrqty = math.ceil(corrqty)*pricebreak[pindex-1]
-        #print corrqty
-        firsttotalprice = pricelist[pindex-1]*corrqty
-    
-        priceresult['firstprice'] = [corrqty,round(firsttotalprice,2)]
-        priceresult['secprice'] = priceresult['firstprice']
-      # print 'firstprice '+str(firsttotalprice)
-        if len(pricebreak) > pindex:
-            secondtotalprice = pricelist[pindex]*pricebreak[pindex]
-            priceresult['secprice'] = [pricebreak[pindex],round(secondtotalprice,2)]
-        
-    
-        #print pricelist
-        #print pricebreak
-        #print priceresult
-    return priceresult
-    
-
-
-
+maxMinVPE = 300
 
 def doQuote(intable):
     cnt = 0;
@@ -63,8 +16,8 @@ def doQuote(intable):
         for intableItem in intable:
             #print(intableItem)
             cnt = cnt+1;
-            #if cnt == 1:
-            #    continue
+            if cnt < 67:
+                continue
             
             print str(cnt) + ' of '+str(len(intable))
             print intableItem['mpn']
@@ -89,15 +42,8 @@ def doQuote(intable):
                     row = []
                     row.append('0')
                     row.append('RS')
-                    price1total = []
-                    price1total = getTotalPrice(intableItem['qty'],result['prices'][i],result['pricebreaks'][i])
-                    #print price1total
-                    if price1total['firstprice'][1] < price1total['secprice'][1]:
-                        row.append(price1total['firstprice'][0])
-                        row.append(price1total['firstprice'][1])
-                    else:
-                        row.append(price1total['secprice'][0])
-                        row.append(price1total['secprice'][1])    
+                    row.append(0)
+                    row.append(0)    
                     row.append(result['ordercode'][i])
                     row.append(result['mpn'][i])
                     row.append(result['manufacturer'][i])
@@ -115,9 +61,9 @@ def doQuote(intable):
             if 1:
                 farnell = Farnell(intableItem['mpn'],1,0)
                 result = farnell.parse()
-                if result['ausUSA']==[-1]:
-                    farnell = Farnell(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
-                    result = farnell.parse()                
+                #if result['ausUSA']==[-1]:
+                #    farnell = Farnell(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
+                #    result = farnell.parse()                
                 for i in range(len(result['ordercode'])):
                     addLine=0; 
                     if excludeRLOrderNumbers == 0:
@@ -132,14 +78,8 @@ def doQuote(intable):
                         row = []
                         row.append('0')
                         row.append('Farnell')
-              
-                        price1total = getTotalPrice(intableItem['qty'],result['prices'][i],result['pricebreaks'][i])
-                        if price1total['firstprice'][1] < price1total['secprice'][1]:
-                            row.append(price1total['firstprice'][0])
-                            row.append(price1total['firstprice'][1])
-                        else:
-                            row.append(price1total['secprice'][0])
-                            row.append(price1total['secprice'][1])
+                        row.append(0) 
+                        row.append(0)
                         row.append(result['ordercode'][i])
                         row.append(result['mpn'][i])
                         row.append(result['manufacturer'][i])
