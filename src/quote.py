@@ -4,9 +4,6 @@ from rs.core import Rs
 from farnell.core import Farnell
 import math
 
-#from PySide.QtCore import *
-#from PySide.QtGui import *
-#from PySide.QtDeclarative import *
 import csv 
 
 excludeRLOrderNumbers = 1;
@@ -30,8 +27,8 @@ def getTotalPrice(qty,pricelist,pricebreak):
             pindex = pindex+1;
         if pindex == 0:
             pindex =1;
-        print pricebreak;
-        print qty;
+        #print pricebreak;
+        #print qty;
         pb = pricebreak[pindex-1]
         if isinstance(pb, basestring):
             if pb.isdigit():
@@ -55,56 +52,20 @@ def getTotalPrice(qty,pricelist,pricebreak):
         #print priceresult
     return priceresult
     
-csvreader = csv.reader(open("bomtest1.csv", "rb"), delimiter="|")
-
-csvwriter = csv.writer(open("bomquote.csv", "wb"), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
-intable = []
-
-for row in csvreader: 
-    intableItem = {'qty':[],'designator':[],'mpn':[],'manufacturer':[],'description':[],'libID':[]}
-    intableItem['qty']=row[1]
-    intableItem['designator'] = row[2]
-    intableItem['mpn'] = row[3]
-    if row[3] == '':
-        intableItem['mpn'] = row[5]
-    intableItem['manufacturer'] = row[4]
-    intableItem['libID'] = row[5]
-    intableItem['description'] = row[7]
-    intable.append(intableItem)
-  
-#print intable     
-
-result=[]
 
 
 
 
-#rsParser.doRSQuote('0034.1506',1,1);
-
-  #result['ordercode']
-  #result['manufacturer']
-  #result['mpn']
-  #result['description'],
-  #result['stock'],  -1 wenn nicht ermittelbar
-  #result['pricebreaks']
-  #result['prices']
-  #result['minVPE'] -1 wenn fehler zb Nicht mehr auf Lager
-  #result['ausUSA'] immer 0
-  #result['URL']
-  #result['supplier']=Farnell
-  
-#result = farnellParser.doFarnellQuote('1384631',0,0);
-#result = rsParser.doRSQuote('0034.1506',0,0); 
-#print result
-def doQuote():
+def doQuote(intable):
     cnt = 0;
     #exit();
     if 1:
         for intableItem in intable:
+            #print(intableItem)
             cnt = cnt+1;
-            if cnt == 1:
-                continue
-    
+            #if cnt == 1:
+            #    continue
+            
             print str(cnt) + ' of '+str(len(intable))
             print intableItem['mpn']
             row = []
@@ -118,6 +79,7 @@ def doQuote():
             if 1:
                 rs = Rs(intableItem['mpn'],1,0)
                 result = rs.parse() 
+                
                 #result = rsParser.doRSQuote(intableItem['mpn'],1,1);
         
                 for i in range(len(result['ordercode'])):
@@ -194,8 +156,26 @@ def doQuote():
                             row.append('nichtAusUSA')
                         row.append(result['URL'][i])
                         csvwriter.writerow(row)    
-          
+        
     
     
-    print result
     ##print result[1]
+csvreader = csv.reader(open("..\\boms\\funksonde2\\sg04_btmodul\\bom.txt", "rb"), delimiter="|")
+
+csvwriter = csv.writer(open("bomquote.csv", "wb"), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
+intable = []
+
+for row in csvreader: 
+    intableItem = {'qty':[],'designator':[],'mpn':[],'manufacturer':[],'description':[],'libID':[]}
+    intableItem['qty']=row[1]
+    intableItem['designator'] = row[2]
+    intableItem['mpn'] = row[3]
+    if row[3] == '':
+        intableItem['mpn'] = row[5]
+    intableItem['manufacturer'] = row[4]
+    intableItem['libID'] = row[5]
+    intableItem['description'] = row[7]
+
+    intable.append(intableItem)
+
+doQuote(intable)

@@ -1,5 +1,5 @@
-from PySide.QtCore import *
-from PySide.QtGui import *
+from PySide import QtCore
+from PySide import QtGui
 from PySide.QtDeclarative import *
 from PySide import QtUiTools
 
@@ -7,12 +7,10 @@ import sys
  
 from tools.core import * 
 import csv 
-from debian.changelog import cvs_keyword
-from gi.overrides.keysyms import doubbaselinedot
 import webbrowser
 
 # Our main window
-class MainWindow(QMainWindow):
+class MainWindow(QtGui.QMainWindow):
    
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -22,23 +20,24 @@ class MainWindow(QMainWindow):
 
     def sigBtnExportClicked(self):
         bqd = self.bomQuoteData.getBomData()
-        csv_farnell = csv.writer(open("farnell.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
+        csv_farnell = csv.writer(open("farnell.csv", "wb"), delimiter="," , quotechar='"', quoting=csv.QUOTE_NONE)
         csv_rs = csv.writer(open("rs.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
         for bom in bqd:
             for quote in bom['quotes']:
-                node = QTreeWidgetItem();
+                node = QtGui.QTreeWidgetItem();
                 node = quote['node']
                 if node is not '':
-                    tree = QTreeWidgetItem();
+                    tree = QtGui.QTreeWidgetItem();
                     #print(quote['node'])
-                    if node.checkState(0) == Qt.Checked:
+                    if node.checkState(0) == QtCore.Qt.Checked:
                         if quote['supplier'] == 'Farnell':
-                            row_farnell=[int(quote['opt_qty']),quote['sku'],bom['ref']]
-                            print(row_farnell)
+                            ref = bom['ref'].replace( ",", "" );
+                            row_farnell=[quote['sku'],int(quote['opt_qty']),ref]
+                            #print(row_farnell)
                             csv_farnell.writerow(row_farnell)
                         if quote['supplier'] == 'RS':
                             row_rs=[int(quote['opt_qty']),quote['sku'],bom['ref']]
-                            print(row_rs)
+                            #print(row_rs)
                             csv_rs.writerow(row_rs)
                         
 
@@ -56,8 +55,13 @@ class MainWindow(QMainWindow):
 
     def initUI(self): 
         self.statusBar().showMessage('Ready')
+        print('init..')
         loader = QtUiTools.QUiLoader()
+        #ui_file = 'gui/mainwindow.ui'
+        #if fileexists('gui/mainwindow.ui')
+        
         self.ui = loader.load('gui/mainwindow.ui')
+        
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
         
@@ -72,7 +76,8 @@ class MainWindow(QMainWindow):
             BOMEintries[0].addChild(child);
     
             self.ui.treeBOM.insertTopLevelItems(0, BOMEintries)
-        self.bomQuoteData = BOMQuoteData("bomquote_farnell_rs.csv")
+        
+        self.bomQuoteData = BOMQuoteData("bomquote.csv")
         self.loadBOMQuote(self.bomQuoteData)
         self.ui.show()
 
@@ -81,7 +86,7 @@ class MainWindow(QMainWindow):
     def loadBOMQuote(self,bomQuoteData):
         bqd = bomQuoteData.getBomData()
         #bqd = bomQuoteData.bomData;
-        tree = QTreeWidget();
+        tree = QtGui.QTreeWidget();
         tree = self.ui.treeBOM;
         tree.clear();
         tree.setColumnCount(4)
@@ -89,14 +94,14 @@ class MainWindow(QMainWindow):
         for bom in bqd: 
             topNodeindex += 1
             #anzahl, MPN, Manufacturer, Beschreibung, ref.
-            top = QTreeWidgetItem()
+            top = QtGui.QTreeWidgetItem()
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
-            top.setFlags(top.flags() | Qt.ItemIsUserCheckable)
-            top.setCheckState(0,Qt.Unchecked);
-            top.setBackground(0,QBrush(Qt.lightGray))
-            top.setBackground(1,QBrush(Qt.lightGray))
-            top.setBackground(2,QBrush(Qt.lightGray))
-            top.setBackground(3,QBrush(Qt.lightGray))
+            top.setFlags(top.flags() | QtCore.Qt.ItemIsUserCheckable)
+            top.setCheckState(0,QtCore.Qt.Unchecked);
+            top.setBackground(0,QtGui.QBrush(QtCore.Qt.lightGray))
+            top.setBackground(1,QtGui.QBrush(QtCore.Qt.lightGray))
+            top.setBackground(2,QtGui.QBrush(QtCore.Qt.lightGray))
+            top.setBackground(3,QtGui.QBrush(QtCore.Qt.lightGray))
             refs = ''
             kommacounter=0
             for ref in bom['ref'].split(', '):
@@ -123,7 +128,7 @@ class MainWindow(QMainWindow):
                 if quote['usa'] == 1:
                     continue
                 #should be done with checkbox once
-                child = QTreeWidgetItem()
+                child = QtGui.QTreeWidgetItem()
                 child.setText(0, quote['supplier']) #'supplier'
                 child.setText(1, quote['sku']) #'SUK'
                 child.setToolTip(0,str(topNodeindex)+';'+str(childindex))
@@ -136,15 +141,15 @@ class MainWindow(QMainWindow):
                 #print(quote)
                 child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
                 child.setText(3, quote['description']+'\nMPN: '+quote['mpn']+'\nManuf.: '+quote['manufacturer']) #'beschreibung+mpn+manufacturer'
-                child.setFlags(child.flags() | Qt.ItemIsUserCheckable)
-                child.setCheckState(0,Qt.Unchecked);
+                child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
+                child.setCheckState(0,QtCore.Qt.Unchecked);
                 if lowestPrice > quote['opt_price']:
                     lowestPrice = quote['opt_price']
                     cheapestChild = child
                 top.addChild(child)
                 top.setExpanded(True)
 
-            cheapestChild.setCheckState(0,Qt.Checked);
+            cheapestChild.setCheckState(0,QtCore.Qt.Checked);
             
             
 
@@ -152,8 +157,10 @@ class MainWindow(QMainWindow):
         
 if __name__ == '__main__':
     # Create the Qt Application
-    app = QApplication(sys.argv)
+    
+    app = QtGui.QApplication(sys.argv)
     # Create and show the main window
+    
     window = MainWindow()
     #window.show()
     # Run the main Qt loop

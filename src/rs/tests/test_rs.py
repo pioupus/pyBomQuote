@@ -8,15 +8,6 @@ import unittest
 
 class Test(unittest.TestCase):
 
-
-    def setUp(self):
-        pass
-
-
-    def tearDown(self):
-        pass
-
-
    # def testSinglePage(self):
     #    from rs.core import Rs
      #   rs = Rs("GRM188R61H105KAALD",1,0)
@@ -53,15 +44,36 @@ class Test(unittest.TestCase):
             rs.parse() 
         
     def testSinglePage_ERJ3EKF2001V(self):
-        if 1:
+        if 0:
             from rs.core import Rs
             rs = Rs("ERJ3EKF2001V",1,0)
             self.page = rs.getPage()
             with open("rs_ERJ3EKF2001V.xml", "ab") as myfile:
                 myfile.write(self.page)
-            rs.parse()         
-        
+            rs.parse()      
+            
+    def testSinglePage_702_002_10_00(self):
+        if 0:
+            from rs.core import Rs
+            rs = Rs("702-002-10-00",1,0)
+            self.page = rs.getPage()
+            with open("rs_702-002-10-00.xml", "ab") as myfile:
+                myfile.write(self.page)
+            rs.parse()           
+
+    def testSinglePage_T491B476K010A(self):
+        if 1:
+            from rs.core import Rs
+            rs = Rs("T491B476K010A",1,0)
+            self.page = rs.getPage()
+            with open("rs_T491B476K010A.xml", "ab") as myfile:
+                myfile.write(self.page)
+            rs.parse()                 
                 
+if __package__ is None:
+    from os import sys, path
+    searchpath = path.abspath(path.join(path.dirname( __file__ ), '..\\..'))
+    sys.path.append(searchpath)
+
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()

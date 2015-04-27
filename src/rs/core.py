@@ -47,8 +47,11 @@ class Rs(object):
         self.seachURL = url_fix(self.seachURL)
         print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        #try:
         req = urllib2.Request(self.seachURL, None, headers = headers)
-        self.page = urllib2.urlopen(req).read()                            
+        self.page = urllib2.urlopen(req).read() 
+        #except socket.error:                           
+        #    print "Oops!  That was no valid number.  Try again..."
 
 
     def getPage(self):
