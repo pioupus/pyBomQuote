@@ -48,7 +48,7 @@ class Rs(object):
         
         self.seachURL='http://de.rs-online.com/web/c/?searchTerm='+searchString+'&sra=oss&r=t&sort-by=P_breakPrice1&sort-order=asc&pn=1'
         self.seachURL = url_fix(self.seachURL)
-        print(self.seachURL)
+        #print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         for retry in range(3):
             self.downloadOK = 1
@@ -65,6 +65,9 @@ class Rs(object):
     def getPage(self):
         return self.page
 
+    def getUrl(self):
+        return self.seachURL
+        
     def parse(self):
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         if self.downloadOK:

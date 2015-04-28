@@ -28,9 +28,6 @@ def url_fix(s, charset='utf-8'):
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
 class Farnell(object):
-    
-
-    
     def __init__(self, MPN, lagerndeProdukte,USAProdukte):
         self.lagerndeProdukte = lagerndeProdukte
         self.USAProdukte = USAProdukte
@@ -50,7 +47,7 @@ class Farnell(object):
             self.seachURL='http://de.farnell.com/jsp/search/browse.jsp?N=0&Ns=P_PRICE_FARNELL_DE|0&Ntk=gensearch&Ntt='+searchString+'&Ntx=mode+matchallpartial&ref=globalsearch'
   
         self.seachURL = url_fix(self.seachURL)
-        print(self.seachURL)
+        #print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
             sock = urllib2.urlopen(self.seachURL)                                    
@@ -60,11 +57,12 @@ class Farnell(object):
             print(err)
             self.downloadOK = 0
             
-
-        
         
     def getPage(self):
         return self.page
+    
+    def getUrl(self):
+        return self.seachURL
     
     def parse(self):
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}

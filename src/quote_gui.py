@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PySide import QtCore
 from PySide import QtGui
 from PySide.QtDeclarative import *
@@ -8,6 +10,8 @@ import sys
 from tools.core import * 
 import csv 
 import webbrowser
+
+from bomImport_gui import dlgBomImport 
 
 BGN_COLOR_QUOTE_MATCHED_MPN = QtGui.QBrush(QtGui.QColor(112, 219, 112))
 BGN_COLOR_QUOTE_EACH_SECOND_LINE = QtGui.QBrush(QtGui.QColor(227, 241, 255))
@@ -62,7 +66,16 @@ class MainWindow(QtGui.QMainWindow):
             self.bomQuoteData = BOMQuoteData(fileName)
             self.loadBOMQuote(self.bomQuoteData)
         
-                                               
+    def sigBtnImportBOM(self): 
+        dialog = QtGui.QFileDialog(self);
+        dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
+        if dialog.exec_():
+            fileName =  dialog.selectedFiles()[0]    
+            bomDlg = dlgBomImport(self,csvInPath = fileName)
+
+        
+            
+    
     def initUI(self): 
         self.statusBar().showMessage('Ready')
         print('init..')
@@ -74,6 +87,7 @@ class MainWindow(QtGui.QMainWindow):
         
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
         self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
+        self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
         self.ui.show()
 
