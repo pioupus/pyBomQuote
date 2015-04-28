@@ -94,12 +94,14 @@ class BOMQuoteData():
         csvreader = csv.reader(open(path, "rb"), delimiter="|")
         for row in csvreader: 
             bomDataSet = {}
-            if row[0] == 'orig':
-                bomDataSet['menge'] = int(row[1])
-                bomDataSet['mpn'] = row[3]
-                bomDataSet['manufacturer'] = row[4]
-                bomDataSet['ref'] = row[2]
-                bomDataSet['description'] = row[5]
+            if row[1] == 'orig':
+                bomDataSet['checked'] = int(row[0])
+                bomDataSet['menge'] = int(row[2])
+                bomDataSet['mpn'] = row[4]
+                bomDataSet['manufacturer'] = row[5]
+                bomDataSet['ref'] = row[3]
+                bomDataSet['description'] = row[6]
+                bomDataSet['footprint'] = row[7]
                 bomDataSet['quotes'] = []
                 self.bomData.append(bomDataSet);
             else:

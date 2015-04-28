@@ -22,12 +22,14 @@ def doQuote(intable):
             print str(cnt) + ' of '+str(len(intable))
             print intableItem['mpn']
             row = []
+            row.append('0')
             row.append('orig')
             row.append(intableItem['qty'])
             row.append(intableItem['designator'])
             row.append(intableItem['mpn'])
             row.append(intableItem['manufacturer'])
             row.append(intableItem['description'])
+            row.append(intableItem['footprint'])
             csvwriter.writerow(row)
             if 1:
                 rs = Rs(intableItem['mpn'],1,0)
@@ -114,8 +116,9 @@ for row in csvreader:
         intableItem['mpn'] = row[5]
     intableItem['manufacturer'] = row[4]
     intableItem['libID'] = row[5]
+    intableItem['footprint'] = row[6]
     intableItem['description'] = row[7]
-
+    
     intable.append(intableItem)
 
 doQuote(intable)

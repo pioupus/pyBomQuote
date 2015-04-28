@@ -42,19 +42,24 @@ class Rs(object):
         self.USAProdukte = USAProdukte
         self.MPN = MPN
         self.seachURL = ''
-        self.downloadOK = 1
+        
+        self.page = ''
         searchString = MPN;
         
         self.seachURL='http://de.rs-online.com/web/c/?searchTerm='+searchString+'&sra=oss&r=t&sort-by=P_breakPrice1&sort-order=asc&pn=1'
         self.seachURL = url_fix(self.seachURL)
         print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
-        try:
-            req = urllib2.Request(self.seachURL, None, headers = headers)
-            self.page = urllib2.urlopen(req).read() 
-        except socket_error as serr:
-            self.downloadOK = 0
-            print "DownloadError: "+str(serr)
+        for retry in range(3):
+            self.downloadOK = 1
+            try:
+                req = urllib2.Request(self.seachURL, None, headers = headers)
+                self.page = urllib2.urlopen(req).read() 
+            except socket_error as serr:
+                self.downloadOK = 0
+                print "DownloadError: "+str(serr)
+            if self.downloadOK:
+                break
 
 
     def getPage(self):
@@ -137,10 +142,16 @@ class Rs(object):
             else:
                 rows = prodTable.find_all('tr')
                 for row in rows:
-                    description = row.find('a', attrs={'class':'tnProdDesc'}).contents[0].encode('utf-8').strip()
+                    description = row.find('a', attrs={'class':'tnProdDesc'})
+                    if description == None:
+                        description = row.find('td', attrs={'class':'descColHeader'}).find('div', attrs={'class':'srDescDiv'})
+                        description = description.find('a').contents[0].encode('utf-8').strip()
+                    else:
+                        description = description.contents[0].encode('utf-8').strip()
                     description = description.translate(maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
                     fields = row.find_all('span', attrs={'class':'labelText'})
                     url = '';
+                    mpn_found=0
                     for field in fields:
                         content = field.contents[0].encode('utf-8').strip()
                         fieldname=''
@@ -152,6 +163,7 @@ class Rs(object):
                             fieldname = 'manufacturer'
                         elif 'Herst. Teile' in content:
                             fieldname = 'mpn'
+                            mpn_found=1;
                         
                         value = field.parent.find('a')
                         if skufound:
@@ -161,8 +173,11 @@ class Rs(object):
                         else:
                             value = field.parent.find('span',attrs={'class':'defaultSearchText'}).contents[0].encode('utf-8').strip()
                        # print(fieldname+' '+value);
-                       
-                        result[fieldname].append(value);
+                        if fieldname != '':
+                            result[fieldname].append(value);
+                        
+                    if mpn_found == 0:#happens when Hausmarke RS
+                        result['mpn'].append('-');
                         
                     minVPE = row.find().find('div',attrs={'class':'qtyBtn'})
                     if minVPE == None:
@@ -172,7 +187,15 @@ class Rs(object):
                         minVPE = minVPE.find('input')['value']
                         minVPE = int(minVPE)
                         pb = minVPE
-                    price = row.find('div',attrs={'class':'priceFixedCol'}).find('ul',attrs={'class':'viewDescList'}).find('span')
+                    price = row.find('div',attrs={'class':'priceFixedCol'}).find('ul',attrs={'class':'viewDescList'})
+                    prices = price.find_all('span')
+                    for price_ in prices:
+                        #print price_
+                        if price_['class'] == 'priceWas':
+                            continue
+                        if 'price' in price_ ['class']:
+                            price = price_
+                            break
                     price = price.contents[0].encode('utf-8').strip()
                     price = price.strip('\xe2\x82\xac ').replace(',','.')
                     price = price.split(' ',2)[0]
@@ -186,7 +209,6 @@ class Rs(object):
                     result['stock'].append(-1);
                     result['URL'].append(url);
     #                result['manufacturer'].append(hersteller);
-                    
         else:
             result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
         #print(result)  

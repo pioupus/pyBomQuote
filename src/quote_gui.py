@@ -9,6 +9,10 @@ from tools.core import *
 import csv 
 import webbrowser
 
+BGN_COLOR_QUOTE_MATCHED_MPN = QtGui.QBrush(QtGui.QColor(112, 219, 112))
+BGN_COLOR_QUOTE_EACH_SECOND_LINE = QtGui.QBrush(QtGui.QColor(227, 241, 255))
+
+BGN_COLOR_TOP_NODE = QtGui.QBrush(QtCore.Qt.lightGray)
 # Our main window
 class MainWindow(QtGui.QMainWindow):
    
@@ -98,10 +102,10 @@ class MainWindow(QtGui.QMainWindow):
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
             top.setFlags(top.flags() | QtCore.Qt.ItemIsUserCheckable)
             top.setCheckState(0,QtCore.Qt.Unchecked);
-            top.setBackground(0,QtGui.QBrush(QtCore.Qt.lightGray))
-            top.setBackground(1,QtGui.QBrush(QtCore.Qt.lightGray))
-            top.setBackground(2,QtGui.QBrush(QtCore.Qt.lightGray))
-            top.setBackground(3,QtGui.QBrush(QtCore.Qt.lightGray))
+            top.setBackground(0,BGN_COLOR_TOP_NODE)
+            top.setBackground(1,BGN_COLOR_TOP_NODE)
+            top.setBackground(2,BGN_COLOR_TOP_NODE)
+            top.setBackground(3,BGN_COLOR_TOP_NODE)
             refs = ''
             kommacounter=0
             for ref in bom['ref'].split(', '):
@@ -116,7 +120,7 @@ class MainWindow(QtGui.QMainWindow):
                         refs = refs+', '+ref
 
             top.setText(2, refs)
-            top.setText(3, bom['description'])  
+            top.setText(3, bom['description']+'\n'+bom['footprint'])  
                 #top.setFirstItemColumnSpanned 
             self.ui.treeBOM.addTopLevelItem(top)
             lowestPrice = sys.maxint
@@ -139,6 +143,17 @@ class MainWindow(QtGui.QMainWindow):
                 else:
                     USA = ''
                 #print(quote)
+                if childindex % 2 == 0:
+                    child.setBackground(1,BGN_COLOR_QUOTE_EACH_SECOND_LINE)
+                    child.setBackground(2,BGN_COLOR_QUOTE_EACH_SECOND_LINE)
+                    child.setBackground(3,BGN_COLOR_QUOTE_EACH_SECOND_LINE)
+
+                if quote['mpn'] == bom['mpn']:
+                    child.setBackground(1,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    
+                
                 child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
                 child.setText(3, quote['description']+'\nMPN: '+quote['mpn']+'\nManuf.: '+quote['manufacturer']) #'beschreibung+mpn+manufacturer'
                 child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
