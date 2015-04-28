@@ -9,3 +9,6 @@
 -Duplikate finden und Menge erhöhen
 -footprint aus BOM mit einlesen und anzeigen DONE
 -Möglichkeit Checkboxdaten im bomquote zu speichern(Nur feld vorsehen) DONE
+
+
+-

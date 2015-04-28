@@ -70,6 +70,9 @@ class BOMQuoteData():
     def getBomData(self):
         return self.bomData
     
+    def clear(self):
+        self.bomData = []
+        
     def doPricing(self):
         for bom in self.bomData:
             qty = bom['menge'];

@@ -14,8 +14,26 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="btnImportBom">
+        <property name="text">
+         <string>Import Bom</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnImportQuote">
+        <property name="text">
+         <string>Import Quote</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
      <widget class="QTreeWidget" name="treeBOM">
       <property name="columnCount">
        <number>4</number>
@@ -42,12 +60,15 @@
       </column>
      </widget>
     </item>
-    <item>
+    <item row="2" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QCheckBox" name="checkBox">
         <property name="text">
          <string>aus USA akzeptieren</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -55,13 +76,6 @@
        <widget class="QPushButton" name="btnExportCarts">
         <property name="text">
          <string>export Warenkoerbe</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnPushButton2">
-        <property name="text">
-         <string>PushButton</string>
         </property>
        </widget>
       </item>
@@ -75,7 +89,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

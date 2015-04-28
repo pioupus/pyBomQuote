@@ -51,12 +51,18 @@ class MainWindow(QtGui.QMainWindow):
         index[1] = int(index[1])
         bqd = self.bomQuoteData.getBomData()
         print(index)
-        #bqd[index[0]]['qotes'][index[1]]
         quote=bqd[index[0]]['quotes'][index[1]]
-        #print()
-        #import webbrowser  
         webbrowser.open(quote['url'], new=2, autoraise=True)
 
+    def sigBtnImportQuote(self):
+        dialog = QtGui.QFileDialog(self);
+        dialog.setNameFilter("Quote Files (*.BomQuote);;All Files (*.*)")
+        if dialog.exec_():
+            fileName =  dialog.selectedFiles()[0]
+            self.bomQuoteData = BOMQuoteData(fileName)
+            self.loadBOMQuote(self.bomQuoteData)
+        
+                                               
     def initUI(self): 
         self.statusBar().showMessage('Ready')
         print('init..')
@@ -67,22 +73,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = loader.load('gui/mainwindow.ui')
         
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
+        self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
-        
-        if 0:
-            BOMEintries = []
-            for i in range(10):
-                item = QTreeWidgetItem(['hallo','hallo2'])
-                BOMEintries.append(item)
-            child = QTreeWidgetItem(['child1','child2']);
-            child.setFlags(item.flags() | Qt.ItemIsUserCheckable)
-            child.setCheckState(0,Qt.Checked);
-            BOMEintries[0].addChild(child);
-    
-            self.ui.treeBOM.insertTopLevelItems(0, BOMEintries)
-        
-        self.bomQuoteData = BOMQuoteData("bomquote.csv")
-        self.loadBOMQuote(self.bomQuoteData)
         self.ui.show()
 
 
