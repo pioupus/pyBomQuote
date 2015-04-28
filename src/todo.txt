@@ -1,0 +1,11 @@
+-felder mit gleicher MPN grün einfärben	DONE
+-zeilen deutlich machen mit zwei Farben DONE
+-Boardanzahl vorgeben
+-Packungseinheiten berücksichtigen
+-Menge einzelner Teile überschreibbar machen
+-zusätliche Bom mergen
+-BOM Quote per GUI
+-Farnell BOM Quote durch API
+-Duplikate finden und Menge erhöhen
+-footprint aus BOM mit einlesen und anzeigen DONE
+-Möglichkeit Checkboxdaten im bomquote zu speichern(Nur feld vorsehen) DONE
