@@ -4,8 +4,9 @@ from PySide import QtCore
 from PySide import QtGui
 from PySide.QtDeclarative import *
 from PySide import QtUiTools
-
+import os
 import sys
+import subprocess
  
 from tools.core import * 
 import csv 
@@ -30,8 +31,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def sigBtnExportClicked(self):
         bqd = self.bomQuoteData.getBomData()
-        csv_farnell = csv.writer(open("farnell.csv", "wb"), delimiter="," , quotechar='"', quoting=csv.QUOTE_NONE)
-        csv_rs = csv.writer(open("rs.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
+        fileext = os.path.splitext(self.quoteFilePath )
+        csvFiles = dict()
+            
         for bom in bqd:
             for quote in bom['quotes']:
                 node = QtGui.QTreeWidgetItem();
@@ -40,15 +42,32 @@ class MainWindow(QtGui.QMainWindow):
                     tree = QtGui.QTreeWidgetItem();
                     #print(quote['node'])
                     if node.checkState(0) == QtCore.Qt.Checked:
+                        supplier = quote['supplier']
+                        if supplier not in csvFiles:
+                            csvOutPath = fileext[0]+'_cart_'+supplier+'.txt'
+                            #print(csvOutPath)
+                            csvFiles[supplier] = open(csvOutPath, "w")
+                            
                         if quote['supplier'] == 'Farnell':
                             ref = bom['ref'].replace( ",", "" );
-                            row_farnell=[quote['sku'],int(quote['opt_qty']),ref]
+                            line = quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
                             #print(row_farnell)
-                            csv_farnell.writerow(row_farnell)
+                            csvFiles[supplier].write(line)
+                            
                         if quote['supplier'] == 'RS':
-                            row_rs=[int(quote['opt_qty']),quote['sku'],bom['ref']]
+                            ref = bom['ref'].replace( ",", "-" );
+                            ref = ref.replace( " ", "" );
+                            line=quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
                             #print(row_rs)
-                            csv_rs.writerow(row_rs)
+                            csvFiles[supplier].write(line)
+        for csvfile in csvFiles:
+            csvFiles[csvfile].close();
+            editor = os.getenv('EDITOR')
+            if editor:
+                os.system(editor + ' ' + csvFiles[csvfile].name)
+            else:
+                subprocess.call("start " + csvFiles[csvfile].name, shell=True)
+                        
                         
 
     def getDBItemFromTooltip(self,item):
@@ -78,6 +97,7 @@ class MainWindow(QtGui.QMainWindow):
             fileName =  dialog.selectedFiles()[0]
             self.bomQuoteData = BOMQuoteData(fileName)
             self.loadBOMQuote(self.bomQuoteData)
+            self.quoteFilePath = fileName
         
     def sigBtnImportBOM(self): 
         dialog = QtGui.QFileDialog(self);
@@ -108,7 +128,7 @@ class MainWindow(QtGui.QMainWindow):
         loader = QtUiTools.QUiLoader()
 
         self.ui = loader.load('gui/mainwindow.ui')
-        
+        self.quoteFilePath = ''
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
         self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
         self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
