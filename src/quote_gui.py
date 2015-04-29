@@ -16,6 +16,7 @@ from bomImport_gui import dlgBomImport
 BGN_COLOR_QUOTE_MATCHED_MPN = QtGui.QBrush(QtGui.QColor(112, 219, 112))
 BGN_COLOR_QUOTE_EACH_SECOND_LINE = QtGui.QBrush(QtGui.QColor(227, 241, 255))
 
+BGN_COLOR_TOP_NODE_RED = QtGui.QBrush(QtGui.QColor(255, 51, 0))
 BGN_COLOR_TOP_NODE = QtGui.QBrush(QtCore.Qt.lightGray)
 # Our main window
 class MainWindow(QtGui.QMainWindow):
@@ -112,6 +113,9 @@ class MainWindow(QtGui.QMainWindow):
             top.setBackground(1,BGN_COLOR_TOP_NODE)
             top.setBackground(2,BGN_COLOR_TOP_NODE)
             top.setBackground(3,BGN_COLOR_TOP_NODE)
+            if len(bom['quotes']) == 0:
+                top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
+            
             refs = ''
             kommacounter=0
             for ref in bom['ref'].split(', '):
@@ -130,18 +134,20 @@ class MainWindow(QtGui.QMainWindow):
                 #top.setFirstItemColumnSpanned 
             self.ui.treeBOM.addTopLevelItem(top)
             lowestPrice = sys.maxint
-            childindex=-1
+            quoteIndex=-1
+            childindex=0
             for quote in bom['quotes']:
-                childindex += 1
+                quoteIndex += 1
                 if quote['sku'] == '-1':
                     continue
                 if quote['usa'] == 1:
                     continue
+                
                 #should be done with checkbox once
                 child = QtGui.QTreeWidgetItem()
                 child.setText(0, quote['supplier']) #'supplier'
                 child.setText(1, quote['sku']) #'SUK'
-                child.setToolTip(0,str(topNodeindex)+';'+str(childindex))
+                child.setToolTip(0,str(topNodeindex)+';'+str(quoteIndex))
                 quote['node'] = child
                 USA = quote['usa']
                 if USA :
@@ -169,10 +175,11 @@ class MainWindow(QtGui.QMainWindow):
                     cheapestChild = child
                 top.addChild(child)
                 top.setExpanded(True)
-
+                childindex+=1
+                
             cheapestChild.setCheckState(0,QtCore.Qt.Checked);
-            
-            
+            if childindex==0:
+                top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
 
 
         
