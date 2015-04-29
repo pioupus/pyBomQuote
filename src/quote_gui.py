@@ -94,7 +94,7 @@ class MainWindow(QtGui.QMainWindow):
         quote = self.getDBItemFromTooltip(item)['quote']
         webbrowser.open(quote['url'], new=2, autoraise=True)
 
-    def sigBtnImportQuote(self):
+    def sigActionOpen_quote_file(self):
         dialog = QtGui.QFileDialog(self);
         dialog.setNameFilter("Quote Files (*.BomQuote);;All Files (*.*)")
         if dialog.exec_():
@@ -104,7 +104,20 @@ class MainWindow(QtGui.QMainWindow):
             self.quoteFilePath = fileName
         
 
-        
+
+
+    def sigActionMultiplyQuote(self):
+        ok = 0        
+        factor = QtGui.QInputDialog.getInt(self, "Factor for multiplication",
+                                         'Factor for multiplication', value=1, minValue=0, maxValue=100);
+        ok = factor[1]
+        factor = factor[0]
+        if ok:                                 
+            #print(factor)
+            self.bomQuoteData.multiplyQuantity(factor)
+            self.loadBOMQuote(self.bomQuoteData)
+            
+            
     def sigTreeBomSelected(self): 
         self.ui.frmCellInfo.setVisible(1)
         self.ui.txtCellInfo.clear();
@@ -122,7 +135,7 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
                 self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
         
-    def sigBtnImportBOM(self): 
+    def sigActionQuote_bom_into_file(self): 
         dialog = QtGui.QFileDialog(self);
         dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
         if dialog.exec_():
@@ -184,8 +197,10 @@ class MainWindow(QtGui.QMainWindow):
         self.ui = loader.load('gui/mainwindow.ui')
         self.quoteFilePath = ''
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
-        self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
-        self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
+        self.ui.actionOpen_quote_file.triggered.connect(self.sigActionOpen_quote_file)
+        self.ui.actionQuote_bom_into_file.triggered.connect(self.sigActionQuote_bom_into_file)
+        self.ui.actionMultiply_part_quantity.triggered.connect(self.sigActionMultiplyQuote)        
+        
         self.ui.btnSearchNext.clicked.connect(self.sigBtnSearchNext)
         self.ui.edtSearch.returnPressed.connect(self.sigBtnSearchNext)
         self.ui.treeBOM.itemSelectionChanged.connect(self.sigTreeBomSelected)

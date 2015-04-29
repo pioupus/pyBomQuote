@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="2" column="0">
+    <item row="1" column="0">
      <widget class="QFrame" name="frmCellInfo">
       <property name="maximumSize">
        <size>
@@ -70,25 +70,7 @@
       </layout>
      </widget>
     </item>
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="btnImportBom">
-        <property name="text">
-         <string>do Bom Quote into Quotefile</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnImportQuote">
-        <property name="text">
-         <string>Import Quotefile</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-    <item row="3" column="0">
+    <item row="2" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QLineEdit" name="edtSearch"/>
@@ -122,7 +104,7 @@
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTreeWidget" name="treeBOM">
       <property name="columnCount">
        <number>4</number>
@@ -160,8 +142,32 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuote_bom_into_file"/>
+    <addaction name="actionOpen_quote_file"/>
+    <addaction name="actionMultiply_part_quantity"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuote_bom_into_file">
+   <property name="text">
+    <string>Quote bom into quote file</string>
+   </property>
+  </action>
+  <action name="actionOpen_quote_file">
+   <property name="text">
+    <string>Open quote file</string>
+   </property>
+  </action>
+  <action name="actionMultiply_part_quantity">
+   <property name="text">
+    <string>Multiply part quantity</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

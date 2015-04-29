@@ -73,6 +73,14 @@ class BOMQuoteData():
     def clear(self):
         self.bomData = []
         
+    def multiplyQuantity(self, factor):
+        for bom in self.bomData:        
+            qty = bom['menge']
+            qty = qty*factor
+            bom['menge'] = qty
+            
+        self.doPricing()
+            
     def doPricing(self):
         for bom in self.bomData:
             qty = bom['menge'];
