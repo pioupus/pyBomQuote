@@ -155,9 +155,9 @@ class MainWindow(QtGui.QMainWindow):
                     child.setBackground(3,BGN_COLOR_QUOTE_EACH_SECOND_LINE)
 
                 if quote['mpn'] == bom['mpn']:
-                    child.setBackground(1,BGN_COLOR_QUOTE_MATCHED_MPN)
-                    child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
                     child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    #child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    #child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
                     
                 
                 child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
