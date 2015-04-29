@@ -85,6 +85,7 @@ class Test(unittest.TestCase):
             #self.page = farnell.getPage()
             #with open("farnell_einfach_usa.xml", "ab") as myfile:
             #    myfile.write(self.page)
+            print farnell.getUrl()
             result = farnell.parse()  
             self.assertEqual(len(result['ausUSA']), 1, '')
             self.assertEqual(result['ausUSA'][0], 1, '')
@@ -100,6 +101,7 @@ class Test(unittest.TestCase):
         if 1:
             from farnell.core import Farnell
             farnell = Farnell("ABI-042-RC",1,0)
+            print farnell.getUrl()
             #self.page = farnell.getPage()
             #with open("farnell_ABI-042-RC.xml", "ab") as myfile:
             #    myfile.write(self.page)
@@ -134,6 +136,7 @@ class Test(unittest.TestCase):
         if 1:
             from farnell.core import Farnell
             farnell = Farnell("20-2136 Vero",1,0)
+            print farnell.getUrl()
             #self.page = farnell.getPage()
             #with open("20-2136.xml", "ab") as myfile:
             #    myfile.write(self.page)
@@ -192,6 +195,7 @@ class Test(unittest.TestCase):
             from farnell.core import Farnell
             farnell = Farnell("744028220 W\xc3rth",1,0)
             self.page = farnell.getPage()
+            print farnell.getUrl()
             with open("farnell_744028220.xml", "ab") as myfile:
                 myfile.write(self.page)
             result = farnell.parse()  
