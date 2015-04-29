@@ -75,14 +75,14 @@
       <item>
        <widget class="QPushButton" name="btnImportBom">
         <property name="text">
-         <string>Import Bom</string>
+         <string>do Bom Quote into Quotefile</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnImportQuote">
         <property name="text">
-         <string>Import Quote</string>
+         <string>Import Quotefile</string>
         </property>
        </widget>
       </item>
@@ -91,19 +91,32 @@
     <item row="3" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QLineEdit" name="edtSearch"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnSearchNext">
         <property name="text">
-         <string>aus USA akzeptieren</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
+         <string>Search next</string>
         </property>
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
        <widget class="QPushButton" name="btnExportCarts">
         <property name="text">
-         <string>export Warenkoerbe</string>
+         <string>export carts</string>
         </property>
        </widget>
       </item>

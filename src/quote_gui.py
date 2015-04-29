@@ -70,10 +70,14 @@ class MainWindow(QtGui.QMainWindow):
                         
                         
 
-    def getDBItemFromTooltip(self,item):
+    def getDBIndexFromTooltip(self,item):
         index=item.toolTip(0).split(';')
         index[0] = int(index[0])
         index[1] = int(index[1])
+        return index
+        
+    def getDBItemFromTooltip(self,item):
+        index = self.getDBIndexFromTooltip(item)
         bqd = self.bomQuoteData.getBomData()
         #print(index)
         bom=bqd[index[0]];
@@ -99,6 +103,25 @@ class MainWindow(QtGui.QMainWindow):
             self.loadBOMQuote(self.bomQuoteData)
             self.quoteFilePath = fileName
         
+
+        
+    def sigTreeBomSelected(self): 
+        self.ui.frmCellInfo.setVisible(1)
+        self.ui.txtCellInfo.clear();
+        if len(self.ui.treeBOM.selectedItems()) > 0:
+            item = self.ui.treeBOM.selectedItems()[0]
+            db = self.getDBItemFromTooltip(item)
+            if db['quote'] == []:
+                self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
+                self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
+                self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['bom']['manufacturer']))
+                self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
+            else:            
+                self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['quote']['mpn']))
+                self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['quote']['manufacturer']))
+                self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
+                self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
+        
     def sigBtnImportBOM(self): 
         dialog = QtGui.QFileDialog(self);
         dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
@@ -106,22 +129,53 @@ class MainWindow(QtGui.QMainWindow):
             fileName =  dialog.selectedFiles()[0]    
             dlgBomImport(self,csvInPath = fileName)
 
+    def selectItem(self,node): 
+        node.setSelected(1)
+        index = self.ui.treeBOM.indexFromItem(node)
+        self.ui.treeBOM.scrollTo(index)
+
+    def doSearch(self, indexFrom):
+        searchString = self.ui.edtSearch.text()
+        bqd = self.bomQuoteData.getBomData()        
+        found = 0
+        firstrow = 1
+        startTop=indexFrom[0]
+        if startTop < 0:
+            startTop = 0;
+        #print('selectindex '+str(indexFrom[0]))
+        for bomItem in bqd[startTop:]:
+            if firstrow == 0 or indexFrom[0] == -1:
+                #print('top: '+str(bomItem)+'\n')
+                if searchString in bomItem['mpn']:
+                    self.selectItem(bomItem['node'])
+                    found = 1
+                    break                
+                
+            startindex = 0
+            if firstrow:
+                startindex = indexFrom[1]+1
+            for quoteItem in bomItem['quotes'][startindex:]:
+                #print('child: '+str(quoteItem)+'\n')
+                if (searchString in quoteItem['mpn']) or (searchString in quoteItem['sku']):
+                    self.selectItem(quoteItem['node'])
+                    found = 1
+                    break
+            firstrow = 0
+            if found:
+                break
+        return found
         
-    def sigTreeBomSelected(self): 
-        self.ui.frmCellInfo.setVisible(1)
-        self.ui.txtCellInfo.clear();
-        item = self.ui.treeBOM.selectedItems()[0]
-        db = self.getDBItemFromTooltip(item)
-        if db['quote'] == []:
-            self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
-            self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
-            self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['bom']['manufacturer']))
-            self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
-        else:            
-            self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['quote']['mpn']))
-            self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['quote']['manufacturer']))
-            self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
-            self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
+    def sigBtnSearchNext(self): 
+        if len(self.ui.treeBOM.selectedItems()) == 0:
+            index = [-1,-1]
+        else:
+            item = self.ui.treeBOM.selectedItems()[0]
+            index = self.getDBIndexFromTooltip(item)
+            item.setSelected(0)
+            
+        found = self.doSearch(index)
+        if found == 0:
+            pass
         
     def initUI(self): 
         self.statusBar().showMessage('Ready')
@@ -132,6 +186,8 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
         self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
         self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
+        self.ui.btnSearchNext.clicked.connect(self.sigBtnSearchNext)
+        self.ui.edtSearch.returnPressed.connect(self.sigBtnSearchNext)
         self.ui.treeBOM.itemSelectionChanged.connect(self.sigTreeBomSelected)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
         pf = self.ui.frmCellInfo.palette();
@@ -165,6 +221,7 @@ class MainWindow(QtGui.QMainWindow):
             top.setBackground(1,BGN_COLOR_TOP_NODE)
             top.setBackground(2,BGN_COLOR_TOP_NODE)
             top.setBackground(3,BGN_COLOR_TOP_NODE)
+            bom['node'] = top
             if len(bom['quotes']) == 0:
                 top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
             
