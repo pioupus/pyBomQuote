@@ -19,6 +19,7 @@ BGN_COLOR_QUOTE_EACH_SECOND_LINE = QtGui.QBrush(QtGui.QColor(227, 241, 255))
 BGN_COLOR_TOP_NODE_RED = QtGui.QBrush(QtGui.QColor(255, 51, 0))
 BGN_COLOR_TOP_NODE = QtGui.QBrush(QtCore.Qt.lightGray)
 # Our main window
+
 class MainWindow(QtGui.QMainWindow):
    
     def __init__(self, parent=None):
@@ -50,13 +51,24 @@ class MainWindow(QtGui.QMainWindow):
                             csv_rs.writerow(row_rs)
                         
 
-    def sigTreeDoubleClicked(self,item, column):
+    def getDBItemFromTooltip(self,item):
         index=item.toolTip(0).split(';')
         index[0] = int(index[0])
         index[1] = int(index[1])
         bqd = self.bomQuoteData.getBomData()
-        print(index)
-        quote=bqd[index[0]]['quotes'][index[1]]
+        #print(index)
+        bom=bqd[index[0]];
+        result={}
+        result['bom'] = bom        
+        if index[1] > -1:
+            quote=bom['quotes'][index[1]]
+            result['quote'] = quote
+        else:
+            result['quote'] = []
+        return result
+        
+    def sigTreeDoubleClicked(self,item, column):
+        quote = self.getDBItemFromTooltip(item)['quote']
         webbrowser.open(quote['url'], new=2, autoraise=True)
 
     def sigBtnImportQuote(self):
@@ -72,24 +84,43 @@ class MainWindow(QtGui.QMainWindow):
         dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
         if dialog.exec_():
             fileName =  dialog.selectedFiles()[0]    
-            bomDlg = dlgBomImport(self,csvInPath = fileName)
+            dlgBomImport(self,csvInPath = fileName)
 
         
-            
-    
+    def sigTreeBomSelected(self): 
+        self.ui.frmCellInfo.setVisible(1)
+        self.ui.txtCellInfo.clear();
+        item = self.ui.treeBOM.selectedItems()[0]
+        db = self.getDBItemFromTooltip(item)
+        if db['quote'] == []:
+            self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
+            self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
+            self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['bom']['manufacturer']))
+            self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
+        else:            
+            self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['quote']['mpn']))
+            self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['quote']['manufacturer']))
+            self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
+            self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
+        
     def initUI(self): 
         self.statusBar().showMessage('Ready')
-        print('init..')
         loader = QtUiTools.QUiLoader()
-        #ui_file = 'gui/mainwindow.ui'
-        #if fileexists('gui/mainwindow.ui')
-        
+
         self.ui = loader.load('gui/mainwindow.ui')
         
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
         self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
         self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
+        self.ui.treeBOM.itemSelectionChanged.connect(self.sigTreeBomSelected)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
+        pf = self.ui.frmCellInfo.palette();
+        pe = self.ui.txtCellInfo.palette();
+        winColor=pf.color(QtGui.QPalette.Window)
+        pe.setColor(QtGui.QPalette.Active, QtGui.QPalette.Base, winColor);
+        pe.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Base, winColor);
+        self.ui.txtCellInfo.setPalette(pe);
+        self.ui.frmCellInfo.setVisible(0)
         self.ui.show()
 
 
@@ -107,6 +138,7 @@ class MainWindow(QtGui.QMainWindow):
             #anzahl, MPN, Manufacturer, Beschreibung, ref.
             top = QtGui.QTreeWidgetItem()
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
+            top.setToolTip(0,str(topNodeindex)+';-1')            
             top.setFlags(top.flags() | QtCore.Qt.ItemIsUserCheckable)
             top.setCheckState(0,QtCore.Qt.Unchecked);
             top.setBackground(0,BGN_COLOR_TOP_NODE)
