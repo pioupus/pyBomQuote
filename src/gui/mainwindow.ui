@@ -15,25 +15,96 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <item row="1" column="0">
+     <widget class="QFrame" name="frmCellInfo">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>100</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QPlainTextEdit" name="txtCellInfo">
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>100</height>
+            </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="backgroundVisible">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="btnImportBom">
+       <widget class="QLineEdit" name="edtSearch"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnSearchNext">
         <property name="text">
-         <string>Import Bom</string>
+         <string>Search next</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnImportQuote">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnExportCarts">
         <property name="text">
-         <string>Import Quote</string>
+         <string>export carts</string>
         </property>
        </widget>
       </item>
      </layout>
     </item>
-    <item row="1" column="0">
+    <item row="0" column="0">
      <widget class="QTreeWidget" name="treeBOM">
       <property name="columnCount">
        <number>4</number>
@@ -60,27 +131,6 @@
       </column>
      </widget>
     </item>
-    <item row="2" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QCheckBox" name="checkBox">
-        <property name="text">
-         <string>aus USA akzeptieren</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnExportCarts">
-        <property name="text">
-         <string>export Warenkoerbe</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -92,8 +142,32 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionQuote_bom_into_file"/>
+    <addaction name="actionOpen_quote_file"/>
+    <addaction name="actionMultiply_part_quantity"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionQuote_bom_into_file">
+   <property name="text">
+    <string>Quote bom into quote file</string>
+   </property>
+  </action>
+  <action name="actionOpen_quote_file">
+   <property name="text">
+    <string>Open quote file</string>
+   </property>
+  </action>
+  <action name="actionMultiply_part_quantity">
+   <property name="text">
+    <string>Multiply part quantity</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

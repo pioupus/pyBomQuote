@@ -4,8 +4,9 @@ from PySide import QtCore
 from PySide import QtGui
 from PySide.QtDeclarative import *
 from PySide import QtUiTools
-
+import os
 import sys
+import subprocess
  
 from tools.core import * 
 import csv 
@@ -16,8 +17,10 @@ from bomImport_gui import dlgBomImport
 BGN_COLOR_QUOTE_MATCHED_MPN = QtGui.QBrush(QtGui.QColor(112, 219, 112))
 BGN_COLOR_QUOTE_EACH_SECOND_LINE = QtGui.QBrush(QtGui.QColor(227, 241, 255))
 
+BGN_COLOR_TOP_NODE_RED = QtGui.QBrush(QtGui.QColor(255, 51, 0))
 BGN_COLOR_TOP_NODE = QtGui.QBrush(QtCore.Qt.lightGray)
 # Our main window
+
 class MainWindow(QtGui.QMainWindow):
    
     def __init__(self, parent=None):
@@ -28,8 +31,9 @@ class MainWindow(QtGui.QMainWindow):
 
     def sigBtnExportClicked(self):
         bqd = self.bomQuoteData.getBomData()
-        csv_farnell = csv.writer(open("farnell.csv", "wb"), delimiter="," , quotechar='"', quoting=csv.QUOTE_NONE)
-        csv_rs = csv.writer(open("rs.csv", "wb"), delimiter=";" , quotechar='"', quoting=csv.QUOTE_NONE)
+        fileext = os.path.splitext(self.quoteFilePath )
+        csvFiles = dict()
+            
         for bom in bqd:
             for quote in bom['quotes']:
                 node = QtGui.QTreeWidgetItem();
@@ -38,57 +42,176 @@ class MainWindow(QtGui.QMainWindow):
                     tree = QtGui.QTreeWidgetItem();
                     #print(quote['node'])
                     if node.checkState(0) == QtCore.Qt.Checked:
+                        supplier = quote['supplier']
+                        if supplier not in csvFiles:
+                            csvOutPath = fileext[0]+'_cart_'+supplier+'.txt'
+                            #print(csvOutPath)
+                            csvFiles[supplier] = open(csvOutPath, "w")
+                            
                         if quote['supplier'] == 'Farnell':
                             ref = bom['ref'].replace( ",", "" );
-                            row_farnell=[quote['sku'],int(quote['opt_qty']),ref]
+                            line = quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
                             #print(row_farnell)
-                            csv_farnell.writerow(row_farnell)
+                            csvFiles[supplier].write(line)
+                            
                         if quote['supplier'] == 'RS':
-                            row_rs=[int(quote['opt_qty']),quote['sku'],bom['ref']]
+                            ref = bom['ref'].replace( ",", "-" );
+                            ref = ref.replace( " ", "" );
+                            line=quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
                             #print(row_rs)
-                            csv_rs.writerow(row_rs)
+                            csvFiles[supplier].write(line)
+        for csvfile in csvFiles:
+            csvFiles[csvfile].close();
+            editor = os.getenv('EDITOR')
+            if editor:
+                os.system(editor + ' ' + csvFiles[csvfile].name)
+            else:
+                subprocess.call("start " + csvFiles[csvfile].name, shell=True)
+                        
                         
 
-    def sigTreeDoubleClicked(self,item, column):
+    def getDBIndexFromTooltip(self,item):
         index=item.toolTip(0).split(';')
         index[0] = int(index[0])
         index[1] = int(index[1])
+        return index
+        
+    def getDBItemFromTooltip(self,item):
+        index = self.getDBIndexFromTooltip(item)
         bqd = self.bomQuoteData.getBomData()
-        print(index)
-        quote=bqd[index[0]]['quotes'][index[1]]
+        #print(index)
+        bom=bqd[index[0]];
+        result={}
+        result['bom'] = bom        
+        if index[1] > -1:
+            quote=bom['quotes'][index[1]]
+            result['quote'] = quote
+        else:
+            result['quote'] = []
+        return result
+        
+    def sigTreeDoubleClicked(self,item, column):
+        quote = self.getDBItemFromTooltip(item)['quote']
         webbrowser.open(quote['url'], new=2, autoraise=True)
 
-    def sigBtnImportQuote(self):
+    def sigActionOpen_quote_file(self):
         dialog = QtGui.QFileDialog(self);
         dialog.setNameFilter("Quote Files (*.BomQuote);;All Files (*.*)")
         if dialog.exec_():
             fileName =  dialog.selectedFiles()[0]
             self.bomQuoteData = BOMQuoteData(fileName)
             self.loadBOMQuote(self.bomQuoteData)
+            self.quoteFilePath = fileName
         
-    def sigBtnImportBOM(self): 
+
+
+
+    def sigActionMultiplyQuote(self):
+        ok = 0        
+        factor = QtGui.QInputDialog.getInt(self, "Factor for multiplication",
+                                         'Factor for multiplication', value=1, minValue=0, maxValue=100);
+        ok = factor[1]
+        factor = factor[0]
+        if ok:                                 
+            #print(factor)
+            self.bomQuoteData.multiplyQuantity(factor)
+            self.loadBOMQuote(self.bomQuoteData)
+            
+            
+    def sigTreeBomSelected(self): 
+        self.ui.frmCellInfo.setVisible(1)
+        self.ui.txtCellInfo.clear();
+        if len(self.ui.treeBOM.selectedItems()) > 0:
+            item = self.ui.treeBOM.selectedItems()[0]
+            db = self.getDBItemFromTooltip(item)
+            if db['quote'] == []:
+                self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
+                self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
+                self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['bom']['manufacturer']))
+                self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
+            else:            
+                self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['quote']['mpn']))
+                self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['quote']['manufacturer']))
+                self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
+                self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
+        
+    def sigActionQuote_bom_into_file(self): 
         dialog = QtGui.QFileDialog(self);
         dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
         if dialog.exec_():
             fileName =  dialog.selectedFiles()[0]    
-            bomDlg = dlgBomImport(self,csvInPath = fileName)
+            dlgBomImport(self,csvInPath = fileName)
 
+    def selectItem(self,node): 
+        node.setSelected(1)
+        index = self.ui.treeBOM.indexFromItem(node)
+        self.ui.treeBOM.scrollTo(index)
+
+    def doSearch(self, indexFrom):
+        searchString = self.ui.edtSearch.text()
+        bqd = self.bomQuoteData.getBomData()        
+        found = 0
+        firstrow = 1
+        startTop=indexFrom[0]
+        if startTop < 0:
+            startTop = 0;
+        #print('selectindex '+str(indexFrom[0]))
+        for bomItem in bqd[startTop:]:
+            if firstrow == 0 or indexFrom[0] == -1:
+                #print('top: '+str(bomItem)+'\n')
+                if searchString in bomItem['mpn']:
+                    self.selectItem(bomItem['node'])
+                    found = 1
+                    break                
+                
+            startindex = 0
+            if firstrow:
+                startindex = indexFrom[1]+1
+            for quoteItem in bomItem['quotes'][startindex:]:
+                #print('child: '+str(quoteItem)+'\n')
+                if (searchString in quoteItem['mpn']) or (searchString in quoteItem['sku']):
+                    self.selectItem(quoteItem['node'])
+                    found = 1
+                    break
+            firstrow = 0
+            if found:
+                break
+        return found
         
+    def sigBtnSearchNext(self): 
+        if len(self.ui.treeBOM.selectedItems()) == 0:
+            index = [-1,-1]
+        else:
+            item = self.ui.treeBOM.selectedItems()[0]
+            index = self.getDBIndexFromTooltip(item)
+            item.setSelected(0)
             
-    
+        found = self.doSearch(index)
+        if found == 0:
+            pass
+        
     def initUI(self): 
         self.statusBar().showMessage('Ready')
-        print('init..')
         loader = QtUiTools.QUiLoader()
-        #ui_file = 'gui/mainwindow.ui'
-        #if fileexists('gui/mainwindow.ui')
-        
+
         self.ui = loader.load('gui/mainwindow.ui')
-        
+        self.quoteFilePath = ''
         self.ui.btnExportCarts.clicked.connect(self.sigBtnExportClicked)
-        self.ui.btnImportQuote.clicked.connect(self.sigBtnImportQuote)
-        self.ui.btnImportBom.clicked.connect(self.sigBtnImportBOM)
+        self.ui.actionOpen_quote_file.triggered.connect(self.sigActionOpen_quote_file)
+        self.ui.actionQuote_bom_into_file.triggered.connect(self.sigActionQuote_bom_into_file)
+        self.ui.actionMultiply_part_quantity.triggered.connect(self.sigActionMultiplyQuote)        
+        
+        self.ui.btnSearchNext.clicked.connect(self.sigBtnSearchNext)
+        self.ui.edtSearch.returnPressed.connect(self.sigBtnSearchNext)
+        self.ui.treeBOM.itemSelectionChanged.connect(self.sigTreeBomSelected)
         self.ui.treeBOM.itemDoubleClicked.connect(self.sigTreeDoubleClicked)
+        pf = self.ui.frmCellInfo.palette();
+        pe = self.ui.txtCellInfo.palette();
+        winColor=pf.color(QtGui.QPalette.Window)
+        pe.setColor(QtGui.QPalette.Active, QtGui.QPalette.Base, winColor);
+        pe.setColor(QtGui.QPalette.Inactive, QtGui.QPalette.Base, winColor);
+        self.ui.txtCellInfo.setPalette(pe);
+        self.ui.frmCellInfo.setVisible(0)
         self.ui.show()
 
 
@@ -106,12 +229,17 @@ class MainWindow(QtGui.QMainWindow):
             #anzahl, MPN, Manufacturer, Beschreibung, ref.
             top = QtGui.QTreeWidgetItem()
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
+            top.setToolTip(0,str(topNodeindex)+';-1')            
             top.setFlags(top.flags() | QtCore.Qt.ItemIsUserCheckable)
             top.setCheckState(0,QtCore.Qt.Unchecked);
             top.setBackground(0,BGN_COLOR_TOP_NODE)
             top.setBackground(1,BGN_COLOR_TOP_NODE)
             top.setBackground(2,BGN_COLOR_TOP_NODE)
             top.setBackground(3,BGN_COLOR_TOP_NODE)
+            bom['node'] = top
+            if len(bom['quotes']) == 0:
+                top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
+            
             refs = ''
             kommacounter=0
             for ref in bom['ref'].split(', '):
@@ -130,18 +258,20 @@ class MainWindow(QtGui.QMainWindow):
                 #top.setFirstItemColumnSpanned 
             self.ui.treeBOM.addTopLevelItem(top)
             lowestPrice = sys.maxint
-            childindex=-1
+            quoteIndex=-1
+            childindex=0
             for quote in bom['quotes']:
-                childindex += 1
+                quoteIndex += 1
                 if quote['sku'] == '-1':
                     continue
                 if quote['usa'] == 1:
                     continue
+                
                 #should be done with checkbox once
                 child = QtGui.QTreeWidgetItem()
                 child.setText(0, quote['supplier']) #'supplier'
                 child.setText(1, quote['sku']) #'SUK'
-                child.setToolTip(0,str(topNodeindex)+';'+str(childindex))
+                child.setToolTip(0,str(topNodeindex)+';'+str(quoteIndex))
                 quote['node'] = child
                 USA = quote['usa']
                 if USA :
@@ -155,9 +285,9 @@ class MainWindow(QtGui.QMainWindow):
                     child.setBackground(3,BGN_COLOR_QUOTE_EACH_SECOND_LINE)
 
                 if quote['mpn'] == bom['mpn']:
-                    child.setBackground(1,BGN_COLOR_QUOTE_MATCHED_MPN)
-                    child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
                     child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    #child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
+                    #child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
                     
                 
                 child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
@@ -169,10 +299,11 @@ class MainWindow(QtGui.QMainWindow):
                     cheapestChild = child
                 top.addChild(child)
                 top.setExpanded(True)
-
+                childindex+=1
+                
             cheapestChild.setCheckState(0,QtCore.Qt.Checked);
-            
-            
+            if childindex==0:
+                top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
 
 
         
