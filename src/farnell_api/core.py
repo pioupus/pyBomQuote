@@ -29,7 +29,10 @@ def url_fix(s, charset='utf-8'):
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
     path = urllib.quote(path, '/%')
     qs = urllib.quote_plus(qs, ':&=')
-    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+    result = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+    result = result.replace('#','%23')
+    return result;
+    
 
 
 class Farnell_api(object):
@@ -68,6 +71,10 @@ class Farnell_api(object):
         except urllib2.HTTPError, err:
             print(err)
             self.downloadOK = 0
+            with open("farnell_api.log", "ab") as logfile:
+                logfile.write(str(err)+'\n')
+                logfile.write(MPN+'\n')
+                logfile.write(self.seachURL+'\n\n')
             
         
     def getPage(self):
@@ -88,6 +95,7 @@ class Farnell_api(object):
             description = product.find('ns1:displayname').contents[0].encode('utf-8').strip()
             stock = product.find('ns1:inv').contents[0].encode('utf-8').strip()
             minVPE = product.find('ns1:translatedminimumorderquality').contents[0].encode('utf-8').strip()
+            minVPE = int(minVPE)
             packSize = product.find('ns1:packsize').contents[0].encode('utf-8').strip()
             URL = API_STORE+'/'+sku
             fromUSA = 1            

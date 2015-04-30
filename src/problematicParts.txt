@@ -4,3 +4,8 @@
 18|1|CON22|Hirschmann Test & Measurement|973582100|973582100|973582100|4mm Bananbuchse PCB mount schwarz|RS fixed
 28|1|IC7|FT230XS|FTDI Chip|FT230XS|SSOP16_64P600X175_HIGHDENS|USB/UART interface, 16SSOP|RS,Farnell fixed
 29|1|IC8|MCP4921-E/MS|Microchip|MCP4921-E/MS|MSOP8_65P540X117-8_MEDDENS|Single 12bit DAC, SPI, typINL+-2LSB, ext. Ref, MSOP8|RS,Farnell fixed
+LT3502EMS#PBF	farnell api
+MCP4921-E/MS	farnell api	einfach nicht verfügbar
+LT6220CS5#TRMPBF 
+LM4040C25H5TA
+20-313137	pku=100 preis testen 

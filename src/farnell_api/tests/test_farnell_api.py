@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
         
         
     def test_ausUSA(self):
-        if 1:
+        if 0:
             from farnell_api.core import Farnell_api
             farnell = Farnell_api('TNPW0805101KBETA',1,0)
             page= farnell.getPage()
@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
             print(result)
             
     def testVero(self):
-        if 1:
+        if 0:
             from farnell_api.core import Farnell_api
             farnell = Farnell_api('8731128',1,0)
             page= farnell.getPage()
@@ -39,6 +39,16 @@ class Test(unittest.TestCase):
                 myfile.write(page)
             result = farnell.parse()
             print(result)
+            
+    def testLT6220CS5_TRMPBF(self):
+        if 1:
+            from farnell_api.core import Farnell_api
+            farnell = Farnell_api('LT6220CS5#TRMPBF',1,0)
+            page= farnell.getPage()
+            with open("farnell_LT6220CS5_TRMPBF.xml", "wb") as myfile:
+                myfile.write(page)
+            result = farnell.parse()
+            print(result)            
 
 if __package__ is None:
     from os import sys, path

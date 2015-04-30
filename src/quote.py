@@ -87,6 +87,7 @@ class Quote():
                             row.append('ausUSA')
                         else:
                             row.append('nichtAusUSA')
+                        row.append(result['pku'][i])
                         row.append(result['URL'][i])
                         csvwriter.writerow(row)    
                 if 1:
@@ -95,17 +96,22 @@ class Quote():
                     result = farnell_api.parse()
                     #if result['ausUSA']==[-1]:
                     #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
-                    #    result = farnell_api.parse()                
+                    #    result = farnell_api.parse()   
+                    
                     for i in range(len(result['ordercode'])):
                         addLine=0; 
+                        #print(result['ordercode'][i])
                         if self.excludeRLOrderNumbers == 0:
                             addLine=1;
                         else:
                             #print result['ordercode'][i].find('RL')
                             if (result['ordercode'][i].find('RL') == -1):
                                 addLine=1;
-                        if self.maxMinVPE <= result['minVPE'][i]:
+                            else:
+                                pass
+                        if self.maxMinVPE <= int(result['minVPE'][i]):
                             addLine = 0
+
                         if addLine:
                             row = []
                             row.append('0')
@@ -126,6 +132,7 @@ class Quote():
                                 row.append('ausUSA')
                             else:
                                 row.append('nichtAusUSA')
+                            row.append(result['pku'][i])
                             row.append(result['URL'][i])
                             csvwriter.writerow(row)    
 

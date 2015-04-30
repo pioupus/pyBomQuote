@@ -49,7 +49,7 @@ class Rs(object):
         self.seachURL='http://de.rs-online.com/web/c/?searchTerm='+searchString+'&sra=oss&r=t&sort-by=P_breakPrice1&sort-order=asc&pn=1'
         self.seachURL = url_fix(self.seachURL)
         #print(self.seachURL)
-        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[],'pku':[],  'ausUSA':[],'URL':[],'supplier':[]}
         for retry in range(3):
             self.downloadOK = 1
             try:
@@ -69,7 +69,7 @@ class Rs(object):
         return self.seachURL
         
     def parse(self):
-        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
         if self.downloadOK:
             soup = BeautifulSoup(self.page)
             prodTable = soup.find('table', attrs={'class':'srtnListTbl'})
@@ -77,7 +77,7 @@ class Rs(object):
                 
                 sku = soup.find('span', attrs={'itemprop':'sku'})
                 if sku == None:
-                    result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
+                    result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1],'pku':[-1],  'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
                 else:
                     sku = sku.contents[0].encode('utf-8').strip()
                     mpn = soup.find('span', attrs={'itemprop':'mpn'})
@@ -112,6 +112,7 @@ class Rs(object):
                     result['mpn'].append(mpn);
                     result['description'].append(description);
                     result['minVPE'].append(minVPE);
+                    result['pku'].append(1);
                     result['stock'].append(stock);
                     result['ausUSA'].append(0);
                     #print(sku)
@@ -207,12 +208,13 @@ class Rs(object):
                     result['pricebreaks'].append([pb])
                     result['description'].append(description);
                     result['minVPE'].append(minVPE);
+                    result['pku'].append(1);
                     result['ausUSA'].append(0);
                     result['supplier'].append('RS');
                     result['stock'].append(-1);
                     result['URL'].append(url);
     #                result['manufacturer'].append(hersteller);
         else:
-            result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
+            result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'pku':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
         #print(result)  
         return result
