@@ -101,7 +101,10 @@ class MainWindow(QtGui.QMainWindow):
         
     def sigTreeDoubleClicked(self,item, column):
         quote = self.getDBItemFromItem(item)['quote']
-        webbrowser.open(quote['url'], new=2, autoraise=True)
+        url = quote['url']
+        if 'http' not in url:
+	    url = 'http://'+url
+        webbrowser.open(url, new=2, autoraise=True)
 
     def sigActionOpen_quote_file(self):
         dialog = QtGui.QFileDialog(self);
