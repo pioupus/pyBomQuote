@@ -270,6 +270,7 @@ class MainWindow(QtGui.QMainWindow):
             lowestPrice = sys.maxint
             quoteIndex=-1
             childindex=0
+            cheapestChild = None
             for quote in bom['quotes']:
                 quoteIndex += 1
                 if quote['sku'] == '-1':
@@ -300,7 +301,7 @@ class MainWindow(QtGui.QMainWindow):
                     #child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
                     
                 
-                child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nStock: '+quote['stock']+USA) #'first Price'
+                child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nPackung: '+quote['pku']+'\nStock: '+quote['stock']+USA) #'first Price'
                 child.setText(3, quote['description']+'\nMPN: '+quote['mpn']+'\nManuf.: '+quote['manufacturer']) #'beschreibung+mpn+manufacturer'
                 child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
                 child.setCheckState(0,QtCore.Qt.Unchecked);
@@ -310,8 +311,9 @@ class MainWindow(QtGui.QMainWindow):
                 top.addChild(child)
                 top.setExpanded(True)
                 childindex+=1
-                
-            cheapestChild.setCheckState(0,QtCore.Qt.Checked);
+            
+            if cheapestChild is not None:
+                cheapestChild.setCheckState(0,QtCore.Qt.Checked);
             if childindex==0:
                 top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
 

@@ -1,1 +1,2 @@
-API_KEY = 'szrm7kzwd28w5ce5s828gzvm'
+API_KEY = 'xxxxxxx'
+API_STORE = 'de.farnell.com'

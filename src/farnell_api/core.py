@@ -10,7 +10,7 @@ import urllib
 import urllib2
 import urlparse
 from bs4 import BeautifulSoup
-import api_config
+from api_config_my import *
 
 def url_fix(s, charset='utf-8'):
     """Sometimes you get an URL by a user that just isn't a real
@@ -29,10 +29,11 @@ def url_fix(s, charset='utf-8'):
     scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
     path = urllib.quote(path, '/%')
     qs = urllib.quote_plus(qs, ':&=')
-    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+    result = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+    result = result.replace('#','%23')
+    return result;
+    
 
-
-FARNELLSTORE = 'de.farnell.com'
 
 class Farnell_api(object):
     def __init__(self, MPN, lagerndeProdukte,USAProdukte):
@@ -43,19 +44,10 @@ class Farnell_api(object):
         self.downloadOK = 1
         self.page = ''
         searchString = MPN;
-        self.seachURL = 'http://api.element14.com/catalog/products'+\
-            '?callInfo.responseDataFormat=XML'+\
-            '&term=any%3A'+MPN+\
-            '&storeInfo.id='+FARNELLSTORE+\
-            '&callInfo.apiKey='+API_KEY+\
-            '&resultsSettings.offset=0'+\
-            '&resultsSettings.numberOfResults=10'+\
-            '&resultsSettings.refinements.filters='+\
-            '&resultsSettings.responseGroup=Prices%2CInventory'
-            
+           
         self.seachURL = 'http://api.element14.com/catalog/products'+\
             '?term=any:'+MPN+\
-            '&storeInfo.id=de.farnell.com'+\
+            '&storeInfo.id='+API_STORE+\
             '&callInfo.omitXmlSchema=false'+\
             '&callInfo.responseDataFormat=xml'+\
             '&callInfo.callback='+\
@@ -79,6 +71,10 @@ class Farnell_api(object):
         except urllib2.HTTPError, err:
             print(err)
             self.downloadOK = 0
+            with open("farnell_api.log", "ab") as logfile:
+                logfile.write(str(err)+'\n')
+                logfile.write(MPN+'\n')
+                logfile.write(self.seachURL+'\n\n')
             
         
     def getPage(self):
@@ -90,9 +86,53 @@ class Farnell_api(object):
     def parse(self):
         soup = BeautifulSoup(self.page)
         products = soup.find_all('ns1:products')
-        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
         for product in products:
-            sku = product.find('<ns1:sku>')
-            print 'test'
+            #print product
+            sku = product.find('ns1:sku').contents[0].encode('utf-8').strip()
+            manufacturer = product.find('ns1:brandname').contents[0].encode('utf-8').strip()
+            mpn = product.find('ns1:translatedmanufacturerpartnumber').contents[0].encode('utf-8').strip()
+            description = product.find('ns1:displayname').contents[0].encode('utf-8').strip()
+            stock = product.find('ns1:inv').contents[0].encode('utf-8').strip()
+            minVPE = product.find('ns1:translatedminimumorderquality').contents[0].encode('utf-8').strip()
+            minVPE = int(minVPE)
+            packSize = product.find('ns1:packsize').contents[0].encode('utf-8').strip()
+            URL = API_STORE+'/'+sku
+            fromUSA = 1            
+            for region in product.find('ns1:stock').find_all('ns1:regionalbreakdown'):
+                lvl = int(region.find('ns1:level').contents[0].encode('utf-8').strip())
+                warehouse = region.find('ns1:warehouse').contents[0].encode('utf-8').strip()
+                #print(str(lvl) + '@'+warehouse)
+                if warehouse.lower() != 'us' and lvl > 0:
+                    fromUSA = 0
+                    
+            prices_item = []
+            breaks_item = []
+            
+            for pricing in product.find_all('ns1:prices'):
+                qty = pricing.find('ns1:from').contents[0].encode('utf-8')
+                qty = int(qty)
+                breaks_item.append(float(qty))
 
+                price = pricing.find('ns1:cost').contents[0].encode('utf-8')
+                price = float(price)
+                prices_item.append(float(price))
+                #print(price)
+                
+            result['pricebreaks'].append(breaks_item)
+            result['prices'].append(prices_item)
+                
+            result['ordercode'].append(sku)
+            result['manufacturer'].append(manufacturer)
+            result['mpn'].append(mpn)
+            result['description'].append(description)
+            result['stock'].append(stock)
+            result['minVPE'].append(minVPE)
+            result['pku'].append(packSize)
+            result['URL'].append(URL)
+            result['ausUSA'].append(fromUSA)
+            result['supplier'].append('Farnell')
+            
+        return result
+        
 

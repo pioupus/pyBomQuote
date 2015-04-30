@@ -13,7 +13,7 @@ def getBestPrice(realPrice,tolerance=0.0):
     else:
         return realPrice[1]
     
-def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks):
+def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks,pku):
     #pricebreak =[2,3,20]
     #pricelist =[0.5,0.3,0.25]
     pindex = 0;
@@ -26,6 +26,7 @@ def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks):
             
         qty = math.ceil(qtyOrig/minVPE)
         qty = qty*minVPE
+        qty = math.ceil(qty/pku)        
         if qty < pricebreaks[0]:
             qty = pricebreaks[0]
         for pb in pricebreaks: 
@@ -163,7 +164,8 @@ class BOMQuoteData():
                 pb = quote['pricebreaks']
                 prices = quote['prices']
                 minVPE = quote['minVPE']
-                realPrice = getRealPrice(qty,minVPE,prices,pb);
+                pku = int(quote['pku'])
+                realPrice = getRealPrice(qty,minVPE,prices,pb,pku );
                 opt_price = getBestPrice(realPrice, tolerance=0.5)
                 if 0:
                     print('sku: '+str(quote['sku']))
@@ -205,6 +207,7 @@ class BOMQuoteData():
                     quoteDataSet['usa'] = 1
                 quoteDataSet['description'] = row[7]
                 quoteDataSet['minVPE'] = row[8]
+                quoteDataSet['pku'] = row[13]
                 quoteDataSet['pricebreaks'] = []
                 quoteDataSet['prices'] = []
                 bricebreaks = row[9].strip('[] ')
@@ -224,7 +227,7 @@ class BOMQuoteData():
                 quoteDataSet['manufacturer'] = row[6]
                 quoteDataSet['supplier'] = row[1]
                 quoteDataSet['checked'] = row[0]
-                quoteDataSet['url'] = row[13]
+                quoteDataSet['url'] = row[14]
                 self.bomData[len(self.bomData)-1]['quotes'].append(quoteDataSet)
         self.doPricing();
         
