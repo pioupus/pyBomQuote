@@ -146,11 +146,24 @@
     <property name="title">
      <string>File</string>
     </property>
+   </widget>
+   <widget class="QMenu" name="menuBOM">
+    <property name="title">
+     <string>BOM</string>
+    </property>
     <addaction name="actionQuote_bom_into_file"/>
+   </widget>
+   <widget class="QMenu" name="menuQuote">
+    <property name="title">
+     <string>Quote</string>
+    </property>
     <addaction name="actionOpen_quote_file"/>
     <addaction name="actionMultiply_part_quantity"/>
+    <addaction name="actionFind_and_merge_duplicates"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuBOM"/>
+   <addaction name="menuQuote"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionQuote_bom_into_file">
@@ -166,6 +179,11 @@
   <action name="actionMultiply_part_quantity">
    <property name="text">
     <string>Multiply part quantity</string>
+   </property>
+  </action>
+  <action name="actionFind_and_merge_duplicates">
+   <property name="text">
+    <string>Find and merge duplicates</string>
    </property>
   </action>
  </widget>
