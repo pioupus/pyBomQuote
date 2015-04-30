@@ -124,6 +124,19 @@ class MainWindow(QtGui.QMainWindow):
                                            QtGui.QMessageBox.Ok )            
         
 
+    def sigActionAdd_number_to_quantity_of_parts(self):
+        dialog = QtGui.QDialog(self);
+        loader = QtUiTools.QUiLoader()
+        dialog = loader.load('gui/addqty.ui') 
+        #dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose); 
+        #dialog.setModal(1);
+        if dialog.exec_():
+            price = dialog.spnPrice.value();
+            qty = dialog.spnQty.value();
+            self.bomQuoteData.addQtyToCheapParts(qty,price)
+            self.loadBOMQuote(self.bomQuoteData)            
+
+
     def sigActionMultiplyQuote(self):
         ok = 0        
         factor = QtGui.QInputDialog.getInt(self, "Factor for multiplication",
@@ -157,6 +170,7 @@ class MainWindow(QtGui.QMainWindow):
         if len(self.ui.treeBOM.selectedItems()) > 0:
             item = self.ui.treeBOM.selectedItems()[0]
             db = self.getDBItemFromItem(item)
+            #print(db)
             if db['quote'] == []:
                 self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
                 self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
@@ -164,8 +178,10 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
                 self.ui.lblqty.setVisible(1)
                 self.ui.spnQty.setVisible(1)
-                self.ui.spnQty.setValue(int(db['bom']['menge']))
+                qty = int(db['bom']['menge'])
+                #print('qty '+str(qty))
                 self.ui.spnQty.setMinimum(1)
+                self.ui.spnQty.setValue(qty)
                 self.ui.spnQty.setSingleStep(1)
                 self.ui.btnSetQty.setToolTip(item.toolTip(0))                
             else:            
@@ -176,10 +192,12 @@ class MainWindow(QtGui.QMainWindow):
                 self.ui.lblqty.setVisible(1)
                 self.ui.spnQty.setVisible(1)        
                 self.ui.spnQty.setValue(int(db['quote']['opt_qty']))
-                self.ui.spnQty.setMinimum(int(db['quote']['minVPE']))
+                #self.ui.spnQty.setMinimum(int(db['quote']['minVPE']))
                 #self.ui.spnQty.setSingleStep(int(db['quote']['minVPE']))
+                self.ui.spnQty.setMinimum(1)
                 self.ui.spnQty.setSingleStep(1)
                 self.ui.btnSetQty.setToolTip(item.toolTip(0))
+            #print('spin '+str(self.ui.spnQty.value()))
         self.ui.btnSetQty.setVisible(0)
         
     def sigActionQuote_bom_into_file(self): 
@@ -248,7 +266,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionQuote_bom_into_file.triggered.connect(self.sigActionQuote_bom_into_file)
         self.ui.actionMultiply_part_quantity.triggered.connect(self.sigActionMultiplyQuote)        
         self.ui.actionFind_and_merge_duplicates.triggered.connect(self.sigActionFind_and_merge_duplicates)
-        
+        self.ui.actionAdd_number_to_quantity_of_parts.triggered.connect(self.sigActionAdd_number_to_quantity_of_parts)
         self.ui.btnSetQty.clicked.connect(self.sigbtnSetQtyClicked) 
         self.ui.spnQty.valueChanged.connect(self.sigSpnQtyChanged) 
         

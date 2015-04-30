@@ -84,8 +84,11 @@ def quotesEqual(a,b):
                         continue   
                     if index_inner == 'stock':
                         continue                       
+                    if index_inner == 'description':
+                        continue                         
                     #print(str(index_inner)+': '+str(elementA[index_inner])+' = '+str(b[index][index_inner]))
                     if elementA[index_inner] != b[index][index_inner]:
+                        print('Quote #'+str(index)+' / field '+str(index_inner)+' is Unequal. A: "'+str(elementA[index_inner])+'" != B: "'+ str(b[index][index_inner])+'"')
                         result = 0
             else:
                 result = 0
@@ -135,7 +138,9 @@ class BOMQuoteData():
                     if (bomA['mpn'] == bomB['mpn']) and (bomA['manufacturer'] == bomB['manufacturer']):
                         #print('found duplicate at '+bomB['mpn'])
                         if quotesEqual(bomA['quotes'],bomB['quotes']) == 0:
-                            #print('but unequal quotes..')
+                            print('but unequal quotes..')
+                            print(bomB)
+                            print(bomA)
                             unequalQuotes[0].append(bomB)
                             unequalQuotes[1].append(bomA)
                         else:
@@ -165,7 +170,21 @@ class BOMQuoteData():
             qty = bom['menge']
             qty = qty*factor
             bom['menge'] = qty
-            
+        self.doPricing()
+
+    def addQtyToCheapParts(self, qtyToAdd,priceThreshold):
+        for bom in self.bomData: 
+            cheapestQuote = sys.float_info.max
+            for quote in bom['quotes']:
+                if len(quote['pricebreaks'])>0:
+                    if float(quote['pricebreaks'][0]) < cheapestQuote:
+                        cheapestQuote = float(quote['pricebreaks'][0])    
+                        
+            if cheapestQuote <= priceThreshold:
+                qty = bom['menge']
+                qty = qty+qtyToAdd
+                bom['menge'] = qty
+                
         self.doPricing()
             
     def doPricing(self):

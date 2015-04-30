@@ -206,6 +206,7 @@
     <addaction name="actionOpen_quote_file"/>
     <addaction name="actionMultiply_part_quantity"/>
     <addaction name="actionFind_and_merge_duplicates"/>
+    <addaction name="actionAdd_number_to_quantity_of_parts"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuBOM"/>
@@ -230,6 +231,11 @@
   <action name="actionFind_and_merge_duplicates">
    <property name="text">
     <string>Find and merge duplicates</string>
+   </property>
+  </action>
+  <action name="actionAdd_number_to_quantity_of_parts">
+   <property name="text">
+    <string>Add number to quantity of cheap parts</string>
    </property>
   </action>
  </widget>
