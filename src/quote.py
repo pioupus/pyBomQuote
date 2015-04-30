@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from rs.core import Rs 
-from farnell.core import Farnell
+from farnell_api.core import Farnell_api
 import math
 
 import csv 
@@ -90,12 +90,12 @@ class Quote():
                         row.append(result['URL'][i])
                         csvwriter.writerow(row)    
                 if 1:
-                    farnell = Farnell(intableItem['mpn'],1,0)
-                    self.progressWriter.printMsg(farnell.getUrl())
-                    result = farnell.parse()
+                    farnell_api = Farnell_api(intableItem['mpn'],1,0)
+                    self.progressWriter.printMsg(farnell_api.getUrl())
+                    result = farnell_api.parse()
                     #if result['ausUSA']==[-1]:
-                    #    farnell = Farnell(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
-                    #    result = farnell.parse()                
+                    #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
+                    #    result = farnell_api.parse()                
                     for i in range(len(result['ordercode'])):
                         addLine=0; 
                         if self.excludeRLOrderNumbers == 0:

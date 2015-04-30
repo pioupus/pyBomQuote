@@ -20,6 +20,7 @@ class Test(unittest.TestCase):
             #with open("farnell_nicht_USA.xml", "ab") as myfile:
             #    myfile.write(self.page)
             result = farnell.parse()
+            print(result)
             #self.assertEqual(result['minVPE'], [10, 150])
             #self.assertEqual(result['stock'], ['14308', '14308'] )
             #self.assertEqual(result['supplier'], ['Farnell','Farnell'])
@@ -36,7 +37,8 @@ class Test(unittest.TestCase):
             #self.page = farnell.getPage()
             #with open("farnell_aus_usa.xml", "ab") as myfile:
             #    myfile.write(self.page)
-            result = farnell.parse()  
+            result = farnell.parse() 
+            print(result)
             #self.assertEqual(len(result['ausUSA']), 2)
             #self.assertEqual(result['minVPE'], [1, 5000])
             #self.assertEqual(result['stock'], ['3583', '10000'] )
@@ -60,7 +62,7 @@ class Test(unittest.TestCase):
             result = farnell.parse()  
             self.assertEqual(len(result['ausUSA']), 1)
             self.assertEqual(result['minVPE'][0], 1)
-            self.assertEqual(result['stock'][0], '7698' )
+            self.assertEqual(result['stock'][0], '7678' )
             self.assertEqual(result['supplier'][0], 'Farnell')
             self.assertEqual(result['mpn'][0], 'CRCW20101K20FKEF')            
             self.assertEqual(result['ausUSA'][0], 0)
@@ -112,7 +114,7 @@ class Test(unittest.TestCase):
             self.assertEqual(result['mpn'], ['ABI-042-RC'])            
             self.assertEqual(result['ausUSA'], [0])
             self.assertEqual(result['ordercode'], ['1827949'])
-            self.assertEqual(result['prices'], [[2.39, 2.2, 2.1, 2.0]])
+            self.assertEqual(result['prices'], [[2.51, 2.31, 2.15, 2.04]])
             self.assertEqual(result['pricebreaks'], [[1.0, 10.0, 50.0, 100.0]])  
     
     def test_downloadDetailC1608X5R0J106M(self):
@@ -142,7 +144,7 @@ class Test(unittest.TestCase):
             #    myfile.write(self.page)
             result = farnell.parse()  
             self.assertEqual(result['minVPE'], [1])
-            self.assertEqual(result['stock'], ['1445'] )
+            self.assertEqual(result['stock'], ['1265'] )
             self.assertEqual(result['supplier'], ['Farnell'])
             self.assertEqual(result['mpn'], ['20-2136'])            
             self.assertEqual(result['ausUSA'], [0])
@@ -167,7 +169,7 @@ class Test(unittest.TestCase):
                 self.assertEqual(result['manufacturer'], ['FTDI'])
                 self.assertEqual(result['ausUSA'], [0])
                 self.assertEqual(result['ordercode'], ['2081321'])
-                self.assertEqual(result['prices'], [[1.9, 1.83, 1.76, 1.3]])
+                self.assertEqual(result['prices'], [[1.94, 1.87, 1.80, 1.33]])
                 self.assertEqual(result['pricebreaks'], [[1.0, 25.0, 100.0, 1000.0]])  
                 
     def test_downloadDetail_MCP4921_E_MS(self):
@@ -187,7 +189,7 @@ class Test(unittest.TestCase):
                 self.assertEqual(result['manufacturer'], ['MICROCHIP'])
                 self.assertEqual(result['ausUSA'], [0])
                 self.assertEqual(result['ordercode'], ['1834916'])
-                self.assertEqual(result['prices'], [[1.92, 1.47, 1.38]])
+                self.assertEqual(result['prices'], [[1.96, 1.50, 1.41]])
                 self.assertEqual(result['pricebreaks'], [[1.0, 10.0, 100.0]])       
                 
     def test_downloadDetail_744028220(self):
