@@ -48,7 +48,7 @@ class Farnell(object):
   
         self.seachURL = url_fix(self.seachURL)
         #print(self.seachURL)
-        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
             sock = urllib2.urlopen(self.seachURL)                                    
             self.page = sock.read()
@@ -65,7 +65,7 @@ class Farnell(object):
         return self.seachURL
     
     def parse(self):
-        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
+        result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[],  'ausUSA':[],'URL':[],'supplier':[]}
         if self.downloadOK:
             soup = BeautifulSoup(self.page)
             pagetest = soup.find_all('div', attrs={'class':'productDisplay'})
@@ -111,7 +111,7 @@ class Farnell(object):
                 result['description'].append(description);
                 result['stock'].append(stock);
                 result['minVPE'].append(minVPE);
-                
+                result['pku'].append(1);
                 ausUSA = soup.find('div', attrs={'class':'highLightBox'})
                 #ausUSA = soup.find('div', attrs={'id':'internalDirectShipTooltip'})
                 ausUSA = ausUSA.find('a', text='US-Bestand')
@@ -149,7 +149,7 @@ class Farnell(object):
             else:
                 pageresults = soup.find('table', attrs={'id':'sProdList'})
                 if pageresults == None:
-                    result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':['-1'], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['Farnell']}    
+                    result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':['-1'], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'pku':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['Farnell']}    
                 else:
                     pageresults = pageresults.find('tbody')
                     pageresults = pageresults.find_all('tr');
@@ -201,6 +201,7 @@ class Farnell(object):
                             minVPE = minVPE.translate(None, ".\t\n\r \xc2\xa0").strip()
                             minVPE = int(minVPE)
                         result['minVPE'].append(minVPE);
+                        result['pku'].append(1);
                         
                         column = row.find('td',attrs={'class':'listPrice'})
                         column = column.find('p',attrs={'class':'price'})
@@ -221,17 +222,9 @@ class Farnell(object):
                         result['pricebreaks'].append(pricebreaks_item)
                         result['prices'].append(prices_item)
                         
-                                                 
-                                        
-                        #if pricebreaks_item == []:
-                        #    result['minVPE'].append(-1)
-                        #else:
-                        #    result['minVPE'].append(pricebreaks_item[0])
-         
-                        
                         result['supplier'].append('Farnell');
         else:
-            result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':['-1'], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['Farnell']}    
+            result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':['-1'], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'pku':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['Farnell']}    
         #print(result)
         return result;
     

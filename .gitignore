@@ -55,3 +55,4 @@ docs/_build/
 
 # PyBuilder
 target/
+/src/farnell_api/api_config_my.py
