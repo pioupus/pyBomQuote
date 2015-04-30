@@ -9,7 +9,6 @@ import sys
 import subprocess
  
 from tools.core import * 
-import csv 
 import webbrowser
 
 from bomImport_gui import dlgBomImport 
@@ -47,17 +46,19 @@ class MainWindow(QtGui.QMainWindow):
                             csvOutPath = fileext[0]+'_cart_'+supplier+'.txt'
                             #print(csvOutPath)
                             csvFiles[supplier] = open(csvOutPath, "w")
-                            
+                        qty = quote['opt_qty']
+                        if 'overWriteQty' in quote:
+                            qty = quote['overWriteQty']
                         if quote['supplier'] == 'Farnell':
                             ref = bom['ref'].replace( ",", "" );
-                            line = quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
+                            line = quote['sku']+','+str(int(qty))+','+ref+'\n'
                             #print(row_farnell)
                             csvFiles[supplier].write(line)
                             
                         if quote['supplier'] == 'RS':
                             ref = bom['ref'].replace( ",", "-" );
                             ref = ref.replace( " ", "" );
-                            line=quote['sku']+','+str(int(quote['opt_qty']))+','+ref+'\n'
+                            line=quote['sku']+','+str(int(qty))+','+ref+'\n'
                             #print(row_rs)
                             csvFiles[supplier].write(line)
         for csvfile in csvFiles:
@@ -70,28 +71,36 @@ class MainWindow(QtGui.QMainWindow):
                         
                         
 
-    def getDBIndexFromTooltip(self,item):
-        index=item.toolTip(0).split(';')
+    def getDBIndexFromTooltip(self,toolTip):
+        index=toolTip.split(';')
         index[0] = int(index[0])
         index[1] = int(index[1])
         return index
+
+    def getDBIndexFromItem(self,item):
+        return self.getDBIndexFromTooltip(item.toolTip(0))
         
-    def getDBItemFromTooltip(self,item):
-        index = self.getDBIndexFromTooltip(item)
+    def getDBItemFromTooltip(self,toolTip):
+        index = self.getDBIndexFromTooltip(toolTip)
         bqd = self.bomQuoteData.getBomData()
         #print(index)
-        bom=bqd[index[0]];
+        bom=bqd[int(index[0])];
         result={}
         result['bom'] = bom        
-        if index[1] > -1:
-            quote=bom['quotes'][index[1]]
+        if int(index[1]) > -1:
+            quote=bom['quotes'][int(index[1])]
             result['quote'] = quote
         else:
             result['quote'] = []
         return result
         
+    def getDBItemFromItem(self,item):   
+        return self.getDBItemFromTooltip(item.toolTip(0))
+            
+
+        
     def sigTreeDoubleClicked(self,item, column):
-        quote = self.getDBItemFromTooltip(item)['quote']
+        quote = self.getDBItemFromItem(item)['quote']
         webbrowser.open(quote['url'], new=2, autoraise=True)
 
     def sigActionOpen_quote_file(self):
@@ -126,23 +135,52 @@ class MainWindow(QtGui.QMainWindow):
             self.bomQuoteData.multiplyQuantity(factor)
             self.loadBOMQuote(self.bomQuoteData)
             
+   
+    def sigbtnSetQtyClicked(self): 
+        tooltip = self.ui.btnSetQty.toolTip()
+        db = self.getDBItemFromTooltip(tooltip)
+        self.ui.btnSetQty.setVisible(0)  
+        if db['quote'] == []:
+            db['bom']['menge'] = self.ui.spnQty.value()
+            self.bomQuoteData.doPricing()
+        else:
+            db['quote']['overWriteQty'] = self.ui.spnQty.value()
+        self.loadBOMQuote(self.bomQuoteData)
+        self.ui.frmCellInfo.setVisible(0)
             
+    def sigSpnQtyChanged(self,i):
+        self.ui.btnSetQty.setVisible(1)  
+        
     def sigTreeBomSelected(self): 
         self.ui.frmCellInfo.setVisible(1)
         self.ui.txtCellInfo.clear();
         if len(self.ui.treeBOM.selectedItems()) > 0:
             item = self.ui.treeBOM.selectedItems()[0]
-            db = self.getDBItemFromTooltip(item)
+            db = self.getDBItemFromItem(item)
             if db['quote'] == []:
                 self.ui.txtCellInfo.appendPlainText('Ref.: '+str(db['bom']['ref']))
                 self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['bom']['mpn']))
                 self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['bom']['manufacturer']))
                 self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['bom']['description']))
+                self.ui.lblqty.setVisible(1)
+                self.ui.spnQty.setVisible(1)
+                self.ui.spnQty.setValue(int(db['bom']['menge']))
+                self.ui.spnQty.setMinimum(1)
+                self.ui.spnQty.setSingleStep(1)
+                self.ui.btnSetQty.setToolTip(item.toolTip(0))                
             else:            
                 self.ui.txtCellInfo.appendPlainText('MPN: '+str(db['quote']['mpn']))
                 self.ui.txtCellInfo.appendPlainText('Manuf.: '+str(db['quote']['manufacturer']))
                 self.ui.txtCellInfo.appendPlainText('Descr.: '+str(db['quote']['description']))            
                 self.ui.txtCellInfo.appendPlainText('SKU.: '+str(db['quote']['sku']))    
+                self.ui.lblqty.setVisible(1)
+                self.ui.spnQty.setVisible(1)        
+                self.ui.spnQty.setValue(int(db['quote']['opt_qty']))
+                self.ui.spnQty.setMinimum(int(db['quote']['minVPE']))
+                #self.ui.spnQty.setSingleStep(int(db['quote']['minVPE']))
+                self.ui.spnQty.setSingleStep(1)
+                self.ui.btnSetQty.setToolTip(item.toolTip(0))
+        self.ui.btnSetQty.setVisible(0)
         
     def sigActionQuote_bom_into_file(self): 
         dialog = QtGui.QFileDialog(self);
@@ -192,7 +230,7 @@ class MainWindow(QtGui.QMainWindow):
             index = [-1,-1]
         else:
             item = self.ui.treeBOM.selectedItems()[0]
-            index = self.getDBIndexFromTooltip(item)
+            index = self.getDBIndexFromItem(item)
             item.setSelected(0)
             
         found = self.doSearch(index)
@@ -210,6 +248,9 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionQuote_bom_into_file.triggered.connect(self.sigActionQuote_bom_into_file)
         self.ui.actionMultiply_part_quantity.triggered.connect(self.sigActionMultiplyQuote)        
         self.ui.actionFind_and_merge_duplicates.triggered.connect(self.sigActionFind_and_merge_duplicates)
+        
+        self.ui.btnSetQty.clicked.connect(self.sigbtnSetQtyClicked) 
+        self.ui.spnQty.valueChanged.connect(self.sigSpnQtyChanged) 
         
         self.ui.btnSearchNext.clicked.connect(self.sigBtnSearchNext)
         self.ui.edtSearch.returnPressed.connect(self.sigBtnSearchNext)
@@ -300,8 +341,16 @@ class MainWindow(QtGui.QMainWindow):
                     #child.setBackground(2,BGN_COLOR_QUOTE_MATCHED_MPN)
                     #child.setBackground(3,BGN_COLOR_QUOTE_MATCHED_MPN)
                     
-                
-                child.setText(2, str(quote['opt_price'])+ 'Eur @ '+str(quote['opt_qty'])+'\nPackung: '+quote['pku']+'\nStock: '+quote['stock']+USA) #'first Price'
+                qty = quote['opt_qty']
+                price = quote['opt_price']
+                if 'overWriteQty' in quote:
+                    qty_ = quote['overWriteQty']
+                    price = getPriceWithoutOptimization(qty_,quote['prices'],quote['pricebreaks'])
+                    if qty != qty_:
+                        qty =   str(qty_)+' man. changed!'  
+                        child.setBackground(2,BGN_COLOR_TOP_NODE_RED)
+                        
+                child.setText(2, str(price)+ 'Eur @ '+str(qty)+'\nPackung: '+quote['pku']+'\nStock: '+quote['stock']+USA) #'first Price'
                 child.setText(3, quote['description']+'\nMPN: '+quote['mpn']+'\nManuf.: '+quote['manufacturer']) #'beschreibung+mpn+manufacturer'
                 child.setFlags(child.flags() | QtCore.Qt.ItemIsUserCheckable)
                 child.setCheckState(0,QtCore.Qt.Unchecked);

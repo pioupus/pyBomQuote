@@ -12,6 +12,17 @@ def getBestPrice(realPrice,tolerance=0.0):
         return realPrice[0]
     else:
         return realPrice[1]
+
+def getPriceWithoutOptimization(qty,pricelist,pricebreaks):
+    pindex = 0
+    for pb in pricebreaks: 
+        if float(qty) < pb:
+            break;
+        pindex = pindex+1;
+    if pindex == 0:
+        pindex =1;
+    price = pricelist[pindex-1]
+    return qty*price
     
 def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks,pku):
     #pricebreak =[2,3,20]
@@ -193,8 +204,12 @@ class BOMQuoteData():
                 bomDataSet['quotes'] = []
                 self.bomData.append(bomDataSet);
             else:
+                sku = row[4]
+                supplier = row[1]
+                if supplier.lower() == 'rs' and 'P' in sku:
+                    continue
                 quoteDataSet={}
-                quoteDataSet['sku'] = row[4]
+                quoteDataSet['sku'] = sku
                 stock = row[11]
                 if stock.isdigit():
                     stock = int(stock);
@@ -225,7 +240,7 @@ class BOMQuoteData():
                 quoteDataSet['mpn'] = row[5]
                 quoteDataSet['node'] = ''
                 quoteDataSet['manufacturer'] = row[6]
-                quoteDataSet['supplier'] = row[1]
+                quoteDataSet['supplier'] = supplier
                 quoteDataSet['checked'] = row[0]
                 quoteDataSet['url'] = row[14]
                 self.bomData[len(self.bomData)-1]['quotes'].append(quoteDataSet)
