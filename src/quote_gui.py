@@ -103,8 +103,17 @@ class MainWindow(QtGui.QMainWindow):
             self.loadBOMQuote(self.bomQuoteData)
             self.quoteFilePath = fileName
         
-
-
+    def sigActionFind_and_merge_duplicates(self):
+        mergeresult = self.bomQuoteData.mergeDuplicates()
+        self.loadBOMQuote(self.bomQuoteData)
+        if len(mergeresult[0]) > 0:
+            st = ''
+            for A in mergeresult[0]:
+                st += A['mpn']+' '+A['ref']+'\n'
+            QtGui.QMessageBox.warning(self, "Quotes of dublicates are not identical.",
+                                           'Quotes of dublicates are not identical. You can solve this by quoting BOMs again.\n'+st,
+                                           QtGui.QMessageBox.Ok )            
+        
 
     def sigActionMultiplyQuote(self):
         ok = 0        
@@ -200,6 +209,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.actionOpen_quote_file.triggered.connect(self.sigActionOpen_quote_file)
         self.ui.actionQuote_bom_into_file.triggered.connect(self.sigActionQuote_bom_into_file)
         self.ui.actionMultiply_part_quantity.triggered.connect(self.sigActionMultiplyQuote)        
+        self.ui.actionFind_and_merge_duplicates.triggered.connect(self.sigActionFind_and_merge_duplicates)
         
         self.ui.btnSearchNext.clicked.connect(self.sigBtnSearchNext)
         self.ui.edtSearch.returnPressed.connect(self.sigBtnSearchNext)

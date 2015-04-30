@@ -58,7 +58,30 @@ def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks):
 
     return realPrice
 
-
+def quotesEqual(a,b):
+    result = 1;
+    if len(a) == len(b):
+        for index,elementA in enumerate(a):
+            if len(elementA) == len(b[index]):
+                for index_inner,elementA_inner in elementA.iteritems():
+                    if index_inner == 'node':
+                        continue
+                    if index_inner == 'opt_price':
+                        continue                    
+                    if index_inner == 'opt_qty':
+                        continue   
+                    if index_inner == 'stock':
+                        continue                       
+                    #print(str(index_inner)+': '+str(elementA[index_inner])+' = '+str(b[index][index_inner]))
+                    if elementA[index_inner] != b[index][index_inner]:
+                        result = 0
+            else:
+                result = 0
+                break
+    else:
+        result = 0
+    return result;
+    
 
 class BOMQuoteData():
     def __init__(self, csvPath=None, parent=None):
@@ -72,6 +95,58 @@ class BOMQuoteData():
     
     def clear(self):
         self.bomData = []
+
+    def mergeDuplicates(self):
+        newList = []
+        unequalQuotes = [[],[]]
+        if 0:
+            for bom in self.bomData:
+                print('MPN: '+bom['mpn']) 
+                print('menge: '+str(bom['menge'])) 
+                print('ref: '+bom['ref']) 
+                print('')
+                
+        for bomAIndex, bomA in enumerate(self.bomData):  
+            #print('Menge '+str(bomA['menge']))
+            newQty = int(bomA['menge'])
+            if newQty == 0:
+                #print('skipped')
+                continue
+            newRefs = bomA['ref']
+            
+            #print('BomA: '+bomA['mpn'])
+            
+            for bomB in self.bomData[bomAIndex+1:]:
+                qty = int(bomB['menge'])
+                if qty > 0:
+                    #print('BomB: '+bomB['mpn'])
+                    if (bomA['mpn'] == bomB['mpn']) and (bomA['manufacturer'] == bomB['manufacturer']):
+                        #print('found duplicate at '+bomB['mpn'])
+                        if quotesEqual(bomA['quotes'],bomB['quotes']) == 0:
+                            #print('but unequal quotes..')
+                            unequalQuotes[0].append(bomB)
+                            unequalQuotes[1].append(bomA)
+                        else:
+                            newQty += qty
+                            newRefs += ', '+bomB['ref']
+                            bomB['menge'] = 0
+                    
+            bomA['menge'] = newQty
+            bomA['ref'] = newRefs
+            newList.append(bomA)
+        self.bomData = newList
+        
+        if 0:
+            for bom in self.bomData:
+                print('MPN: '+bom['mpn']) 
+                print('menge: '+str(bom['menge'])) 
+                print('ref: '+bom['ref']) 
+                print('')
+                
+            for i,quote in enumerate(unequalQuotes[0]):
+                print(quote)
+                print(unequalQuotes[1][i])
+        return unequalQuotes
         
     def multiplyQuantity(self, factor):
         for bom in self.bomData:        
