@@ -46,6 +46,10 @@ class MainWindow(QtGui.QMainWindow):
                             csvOutPath = fileext[0]+'_cart_'+supplier+'.txt'
                             #print(csvOutPath)
                             csvFiles[supplier] = open(csvOutPath, "w")
+                            if supplier.lower() == 'rs':
+								csvFiles[supplier].write('http://de.rs-online.com/web/ca/Warenkorb/ and click on "Mehrere Bestell-Nummern einfuegen"\n\n')
+                            if supplier.lower() == 'farnell':
+								csvFiles[supplier].write('http://de.farnell.com/webapp/wcs/stores/servlet/QuickOrderView?isQuickPaste=true&catalogId=15001&langId=-3&storeId=10161\n\n')									
                         qty = quote['opt_qty']
                         if 'overWriteQty' in quote:
                             qty = quote['overWriteQty']
@@ -67,9 +71,11 @@ class MainWindow(QtGui.QMainWindow):
             if editor:
                 os.system(editor + ' ' + csvFiles[csvfile].name)
             else:
-                subprocess.call("start " + csvFiles[csvfile].name, shell=True)
-                        
-                        
+				callstr='"'+csvFiles[csvfile].name+'"'
+				print(callstr)  
+				os.startfile(callstr)
+				#subprocess.call(['start',callstr], shell=True)
+
 
     def getDBIndexFromTooltip(self,toolTip):
         index=toolTip.split(';')
