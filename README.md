@@ -6,7 +6,7 @@ URL for each product. This information helps you to select the supplier for each
 At the end you can export cart tables which can be uploaded directly to the supplier pages to
 be added to your shopping cart.
 
-![Mainwindow Screenshot](http://docs/mainwindow.png "Mainwindow Screenshot")
+![Mainwindow Screenshot](http://docs/mainwindow.png?raw=true "Mainwindow Screenshot")
 
 
 
