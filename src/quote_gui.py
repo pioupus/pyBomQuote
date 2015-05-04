@@ -385,9 +385,8 @@ class MainWindow(QtGui.QMainWindow):
                 top.setBackground(0,BGN_COLOR_TOP_NODE_RED)
 
 
-        
-if __name__ == '__main__':
-    # Create the Qt Application
+def startApp():
+     # Create the Qt Application
     
     app = QtGui.QApplication(sys.argv)
     # Create and show the main window
@@ -395,4 +394,6 @@ if __name__ == '__main__':
     window = MainWindow()
     #window.show()
     # Run the main Qt loop
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())   
+if __name__ == '__main__':
+	startApp();
