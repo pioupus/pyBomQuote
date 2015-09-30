@@ -203,7 +203,13 @@ class Rs(object):
                     price = price.contents[0].encode('utf-8').strip()
                     price = price.strip('\xe2\x82\xac ').replace(',','.')
                     price = price.split(' ',2)[0]
-                    price = float(price)
+                    price = price.split('.');# in case we have numbers like 3.256.99
+                    price_str = '';
+                    for i in range(len(price)-1):
+                        price_str = price_str+price[i];
+                    price_str = price_str+'.'+price[-1];
+                    #print(price_str)
+                    price = float(price_str) 
                     result['prices'].append([price])
                     result['pricebreaks'].append([pb])
                     result['description'].append(description);
