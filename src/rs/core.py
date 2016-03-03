@@ -86,7 +86,13 @@ class Rs(object):
                     else:
                         mpn = mpn.contents[0].encode('utf-8').strip()
                     
-                    hersteller = soup.find('span', attrs={'itemprop':'name'}).contents[0].encode('utf-8').strip()
+                    hersteller = soup.find('span', attrs={'itemprop':'brand'})
+                    if hersteller == None:
+                        hersteller = 'Nicht verfuegbar'
+                    else:
+                        hersteller = hersteller.contents[0].encode('utf-8').strip()
+                        
+                    
                     description = soup.find('div', attrs={'class':'productDetailsContainer floatRight'})
                     if description == None:
                         description = 'Nicht verfuegbar'
@@ -99,13 +105,18 @@ class Rs(object):
                     else: 
                         minVPE = minVPE.find('form')
                         minVPE = minVPE.find('div', attrs={'class':'qty'}).find('input')['value']
-                        minVPE = minVPE
+                        minVPE = int(minVPE)
                     url = soup.find('link', attrs={'rel':'canonical'})['href']
                     stock = soup.find('div', attrs={'class':'floatLeft stockMessaging availMessageDiv bottom5'})
                     if stock == None:
                         stock = 'Nicht verfuegbar'
                     else:
-                        stock = stock.contents[0].encode('utf-8').strip()
+                        #print(stock)
+                        stock = stock.find('link')['href']
+                        if stock == "http://schema.org/InStock":
+                            stock = 'Lieferbar'
+                        else:
+                           stock = 'Nicht verfuegbar'                 
                     result['ordercode'].append(sku);
                     result['URL'].append(url);
                     result['manufacturer'].append(hersteller);
@@ -130,14 +141,25 @@ class Rs(object):
                         rows = rows.find_all('li')
                         prices_item = []
                         breaks_item = []
+                        
                         for row in rows:
-                            qty = row.find('span', attrs={'itemprop':'eligibleQuantity'}).contents[0].encode('utf-8').strip()
+                           # print(row)
+                            qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
+                            if qty == None:
+                                continue
+                            qty = qty.find('meta', attrs={'itemprop':'minValue'})
+                            if qty == None:
+                                continue
+                            qty = qty["content"]
+                            #print(qty)
                             qty = int(qty)
                             breaks_item.append(qty)
-                            price = row.find('span', attrs={'itemprop':'price'}).contents[0].encode('utf-8').strip()
+                            
+                            price = row.find('meta', attrs={'itemprop':'price'})["content"]
                             price = price.strip('\xe2\x82\xac ').replace(',','.')
                             price = price.split(' ',2)[0]
                             price = float(price)
+                            #print(price)
                            # print(price)
                             prices_item.append(price)
                         result['pricebreaks'].append(breaks_item)
