@@ -127,6 +127,24 @@ class Test(unittest.TestCase):
             self.assertEqual(result['pricebreaks'], [[10, 50]])
             self.assertEqual(result['manufacturer'],  ['KEMET'])
             
+    def testSinglePage_20_313137(self):
+        if 1:
+            from rs.core import Rs
+            rs = Rs("20-313137",1,0)
+            self.page = rs.getPage()
+            with open("rs_20-313137.xml", "ab") as myfile:
+                myfile.write(self.page)
+            result = rs.parse()   
+            #print result
+            self.assertEqual(result['minVPE'], [100])
+            self.assertIn('Lieferbar' , result['stock'][0])
+            self.assertEqual(result['supplier'], ['RS'])
+            self.assertEqual(result['mpn'], ['20-313137'])            
+            self.assertEqual(result['ausUSA'], [0])
+            self.assertEqual(result['ordercode'],  ['508-0685'])
+            self.assertEqual(result['prices'], [[0.261]])
+            self.assertEqual(result['pricebreaks'], [[100]])
+            self.assertEqual(result['manufacturer'],  ['Vero Technologies'])
 
     def testSinglePage_LIS331DLH(self):
         if 1:

@@ -245,11 +245,11 @@ class BOMQuoteData():
                 quoteDataSet['pricebreaks'] = []
                 quoteDataSet['prices'] = []
                 bricebreaks = row[9].strip('[] ')
-                
+                print ('PKU: '+ quoteDataSet['sku']);
                 for pb in bricebreaks.split(', '):
+                    #print pb
                     pb = float(pb)
                     quoteDataSet['pricebreaks'].append(float(pb))
-                    
 
                 prices = row[10].strip('[] ')
                 for price in prices.split(', '):

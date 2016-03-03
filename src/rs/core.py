@@ -138,24 +138,38 @@ class Rs(object):
                         result['prices'].append([-1])
                         #result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}                    
                     else:
-                        rows = rows.find_all('li')
+                        rows = rows.find_all('li', attrs={'itemprop':'priceSpecification'})
                         prices_item = []
                         breaks_item = []
                         
                         for row in rows:
-                           # print(row)
+                            #print(row)
                             qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
                             if qty == None:
-                                continue
-                            qty = qty.find('meta', attrs={'itemprop':'minValue'})
-                            if qty == None:
-                                continue
-                            qty = qty["content"]
+                                qty = row.find('div', attrs={'class':'qty hide'})
+                                if qty == None:
+                                    continue
+                                qty = qty.find('span').contents[0].encode('utf-8').strip()
+                                #print qty
+                            else:
+                                qty = qty.find('meta', attrs={'itemprop':'minValue'})
+                                if qty == None:
+                                    continue
+                                qty = qty["content"]
                             #print(qty)
                             qty = int(qty)
                             breaks_item.append(qty)
                             
-                            price = row.find('meta', attrs={'itemprop':'price'})["content"]
+                            price = row.find('meta', attrs={'itemprop':'price'})
+                            if price == None:
+                                price = row.find('span', attrs={'id':'breakUnitPrice'}) 
+                                if price == None:
+                                    continue
+                                #print price     
+                                price = price.contents[0].encode('utf-8').strip()
+                                                           
+                            else:
+                                price = price["content"]
                             price = price.strip('\xe2\x82\xac ').replace(',','.')
                             price = price.split(' ',2)[0]
                             price = float(price)
