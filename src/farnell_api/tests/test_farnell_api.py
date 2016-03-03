@@ -10,7 +10,7 @@ class Test(unittest.TestCase):
 
 
     def testName(self):
-        if 0:
+        if 1:
             from farnell_api.core import Farnell_api
             farnell = Farnell_api('MC0402B104K160CT',1,0)
             page= farnell.getPage()
@@ -21,7 +21,7 @@ class Test(unittest.TestCase):
         
         
     def test_ausUSA(self):
-        if 0:
+        if 1:
             from farnell_api.core import Farnell_api
             farnell = Farnell_api('TNPW0805101KBETA',1,0)
             page= farnell.getPage()
@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
             print(result)
             
     def testVero(self):
-        if 0:
+        if 1:
             from farnell_api.core import Farnell_api
             farnell = Farnell_api('8731128',1,0)
             page= farnell.getPage()
