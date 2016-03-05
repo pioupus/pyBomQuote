@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>pyBomQuote</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -157,22 +157,22 @@
       </property>
       <column>
        <property name="text">
-        <string notr="true">1</string>
+        <string notr="true">BOMPart/Supplier</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string notr="true">2</string>
+        <string notr="true">Ordercode</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string notr="true">3</string>
+        <string notr="true">Reference/Pricing</string>
        </property>
       </column>
       <column>
        <property name="text">
-        <string notr="true">4</string>
+        <string notr="true">Description</string>
        </property>
       </column>
      </widget>
@@ -188,11 +188,6 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
-    <property name="title">
-     <string>File</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuBOM">
     <property name="title">
      <string>BOM</string>
@@ -208,7 +203,6 @@
     <addaction name="actionFind_and_merge_duplicates"/>
     <addaction name="actionAdd_number_to_quantity_of_parts"/>
    </widget>
-   <addaction name="menuFile"/>
    <addaction name="menuBOM"/>
    <addaction name="menuQuote"/>
   </widget>
