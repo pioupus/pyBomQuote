@@ -149,6 +149,11 @@ class Quote():
                     for i in range(len(result['ordercode'])):
                         addLine=1; 
  
+                        if (str(result['stock'][i]).find('Reel') == -1):
+                            addLine=1;
+                        else:
+                            addLine=0;
+                        
                         if self.maxMinVPE <= int(result['minVPE'][i]):
                             addLine = 0
 
