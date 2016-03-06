@@ -54,7 +54,7 @@ class Digikey_octo(object):
 
         #self.seachURL = url_fix(self.seachURL)
         
-        print(self.seachURL)
+        #print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
             sock = urllib2.urlopen(self.seachURL)                                    
@@ -75,6 +75,7 @@ class Digikey_octo(object):
                     #print "item"
                     for offer in item['offers']:
                         if offer['seller']['name'] == 'Digi-Key':
+                            #print "Digikey"
                             productBypreferredSeller = 1
                             offers.append(offer)
 
@@ -89,7 +90,7 @@ class Digikey_octo(object):
             
             
             #print(self.digikey_item[0]['offers'])
-
+            #print self.digikey_item
                     
             sock.close()
         except urllib2.HTTPError, err:
@@ -111,9 +112,11 @@ class Digikey_octo(object):
         USD_FACTOR = 0.0;
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
         for product in self.digikey_item:
+            #print "product"
             for offer in product['offers']:
+                #print "offer"
                 #print product
-                manufacturer = product['brand']['name']
+                manufacturer = product['brand']['name'].encode('utf-8')
                 mpn = product['mpn']
                 description = product['descriptions']['value']
 
@@ -122,6 +125,8 @@ class Digikey_octo(object):
                 sku = offer['sku']
                 packSize = 1
                 stock = offer['in_stock_quantity']
+                if self.lagerndeProdukte and (stock == 0):
+                    continue
                 if offer["packaging"]=="Custom Reel":
                     description = 'Digi-Reel: '+description
                     stock = str(stock) + ' / Digi-Reel'

@@ -62,7 +62,7 @@ class Farnell_api(object):
 
         self.seachURL = url_fix(self.seachURL)
         
-        print(self.seachURL)
+        #print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
             sock = urllib2.urlopen(self.seachURL)                                    

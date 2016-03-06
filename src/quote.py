@@ -5,6 +5,8 @@ from farnell_api.core import Farnell_api
 from digikey_octopart.core import Digikey_octo
 import math
 
+
+
 import csv 
 
 class ProgressWriter():

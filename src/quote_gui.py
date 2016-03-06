@@ -49,7 +49,9 @@ class MainWindow(QtGui.QMainWindow):
                             if supplier.lower() == 'rs':
 								csvFiles[supplier].write('http://de.rs-online.com/web/ca/Warenkorb/ and click on "Mehrere Bestell-Nummern einfuegen"\n\n')
                             if supplier.lower() == 'farnell':
-								csvFiles[supplier].write('http://de.farnell.com/webapp/wcs/stores/servlet/QuickOrderView?isQuickPaste=true&catalogId=15001&langId=-3&storeId=10161\n\n')									
+								csvFiles[supplier].write('http://de.farnell.com/webapp/wcs/stores/servlet/QuickOrderView?isQuickPaste=true&catalogId=15001&langId=-3&storeId=10161\n\n')
+                            if supplier.lower() == 'digikey':
+                                csvFiles[supplier].write('https://www.digikey.de/Classic/Ordering/FastAdd.aspx\n\n')                                									
                         qty = quote['opt_qty']
                         if 'overWriteQty' in quote:
                             qty = quote['overWriteQty']
@@ -65,16 +67,25 @@ class MainWindow(QtGui.QMainWindow):
                             line=quote['sku']+','+str(int(qty))+','+ref+'\n'
                             #print(row_rs)
                             csvFiles[supplier].write(line)
+
+                        if quote['supplier'].lower() == 'digikey':
+                            ref = bom['ref'].replace( ",", "-" );
+                            ref = ref.replace( " ", "" );
+                            line=str(int(qty))+','+quote['sku']+','+ref+'\n'
+                            #print(row_rs)
+                            csvFiles[supplier].write(line)
+                                                        
         for csvfile in csvFiles:
             csvFiles[csvfile].close();
             editor = os.getenv('EDITOR')
             if editor:
                 os.system(editor + ' ' + csvFiles[csvfile].name)
             else:
-				callstr='"'+csvFiles[csvfile].name+'"'
-				print(callstr)  
-				os.startfile(callstr)
-				#subprocess.call(['start',callstr], shell=True)
+                if sys.platform == 'win32':
+    				callstr='"'+csvFiles[csvfile].name+'"'
+    				print(callstr)  
+    				os.startfile(callstr)
+    				#subprocess.call(['start',callstr], shell=True)
 
 
     def getDBIndexFromTooltip(self,toolTip):

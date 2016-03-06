@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 from os import sys, path
-searchpath = path.abspath(path.join(path.dirname( __file__ ), 'src\\'))
+reload(sys)
+sys.setdefaultencoding('utf8')
+searchpath = path.abspath(path.join(path.dirname( __file__ ), 'src/'))
 sys.path.append(searchpath)
 	
 import os
+
+
 
 class cd:
     """Context manager for changing the current working directory"""
@@ -18,7 +22,7 @@ class cd:
         os.chdir(self.savedPath)
 	
 
-with cd('src\\'):
+with cd('src/'):
 		
 	from quote_gui import *
 			
