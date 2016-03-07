@@ -265,7 +265,7 @@ class Test(unittest.TestCase):
             result = rs.parse()   
             print result 
             
-            self.assertEqual(result['minVPE'], -1)
+            self.assertEqual(result['minVPE'], [-1])
 
             
                 
