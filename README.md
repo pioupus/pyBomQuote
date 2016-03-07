@@ -15,6 +15,9 @@ Or
 ```
 the easy_install script is located in the python installation. There might be a problem with the library pyqt. In that case you have to rename the files qt.conf to eg. qt_.conf.
 
+pip install soaplib
+
+
 ##First start
 It is necessary to get a key for the Farnell REST API. Register at [https://partner.element14.com/member/register](https://partner.element14.com/member/register) and get the REST Key. Copy and rename the file pyBomQuote/src/farnell_api/api_config.py to pyBomQuote/src/farnell_api/api_config_my.py.
 
