@@ -43,6 +43,26 @@ class Test(unittest.TestCase):
             self.assertEqual(result['pricebreaks'], [[200,1000]])
             self.assertEqual(result['manufacturer'],  ['Murata'])
 
+
+    def testSinglePage_ERJ2RKF3162X(self):
+        if 1:
+            from rs.core import Rs
+            rs = Rs("ERJ-2RKF3162X",1,0)
+            self.page = rs.getPage()
+            with open("rs_ERJ-2RKF3162X.xml", "ab") as myfile:
+                myfile.write(self.page)
+            result = rs.parse() 
+            #print result
+            self.assertEqual(result['minVPE'], [1])
+            self.assertEqual(result['stock'], ['Nicht verfuegbar'] )
+            self.assertEqual(result['supplier'], ['RS'])
+            self.assertEqual(result['mpn'], ['ERJ-2RKF3162X'])            
+            self.assertEqual(result['ausUSA'], [0])
+            self.assertEqual(result['ordercode'],  ['871-9279'])
+            self.assertEqual(result['prices'], [[154.50]])
+            self.assertEqual(result['pricebreaks'], [[1]])
+            self.assertEqual(result['manufacturer'],  ['Panasonic'])
+            
     def testSinglePage_24AA16T_I_OT(self):
         if 1:
             from rs.core import Rs
@@ -234,6 +254,18 @@ class Test(unittest.TestCase):
             self.assertEqual(result['prices'], [[1.97, 1.87]])
             self.assertEqual(result['pricebreaks'], [[2, 10]])
             self.assertEqual(result['manufacturer'],  ['Microchip'])            
+
+    def testSinglePage_MC0603X105K160CT  (self):
+        if 1:
+            from rs.core import Rs
+            rs = Rs("MC0603X105K160CT",1,0)
+            self.page = rs.getPage()
+            with open("MC0603X105K160CT.xml", "ab") as myfile:
+                myfile.write(self.page)
+            result = rs.parse()   
+            print result 
+            
+            self.assertEqual(result['minVPE'], -1)
 
             
                 

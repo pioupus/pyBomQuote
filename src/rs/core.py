@@ -74,7 +74,6 @@ class Rs(object):
             soup = BeautifulSoup(self.page)
             prodTable = soup.find('table', attrs={'class':'srtnListTbl'})
             if prodTable == None:        
-                
                 sku = soup.find('span', attrs={'itemprop':'sku'})
                 if sku == None:
                     result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1],'pku':[-1],  'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}
@@ -138,11 +137,17 @@ class Rs(object):
                         result['prices'].append([-1])
                         #result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}                    
                     else:
+<<<<<<< HEAD
                         rows = rows.find_all('li', attrs={'itemprop':'priceSpecification'})
+=======
+                        
+                        rows = rows.find_all('li')
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                         prices_item = []
                         breaks_item = []
                         
                         for row in rows:
+<<<<<<< HEAD
                             #print(row)
                             qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
                             if qty == None:
@@ -152,22 +157,48 @@ class Rs(object):
                                 qty = qty.find('span').contents[0].encode('utf-8').strip()
                                 #print qty
                             else:
+=======
+                            if row['id'] == "emptyBox":
+                                continue
+                            #print(row)
+                            qty = row.find('div', attrs={'class':'qty hide'})
+                            #print qty
+                            if qty == None:
+                                qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
+                                if qty == None:
+                                    continue
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                                 qty = qty.find('meta', attrs={'itemprop':'minValue'})
                                 if qty == None:
                                     continue
                                 qty = qty["content"]
+<<<<<<< HEAD
+=======
+                            else:
+                                qty = qty.find('span').contents[0].encode('utf-8').strip()
+                            
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                             #print(qty)
                             qty = int(qty)
                             breaks_item.append(qty)
+                           
                             
                             price = row.find('meta', attrs={'itemprop':'price'})
                             if price == None:
+<<<<<<< HEAD
                                 price = row.find('span', attrs={'id':'breakUnitPrice'}) 
                                 if price == None:
                                     continue
                                 #print price     
                                 price = price.contents[0].encode('utf-8').strip()
                                                            
+=======
+                                price = row.find('span', attrs={'id':'breakUnitPrice'})
+                                if price == None:
+                                    price = '-1'
+                                else:
+                                    price = price.contents[0].encode('utf-8').strip()
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                             else:
                                 price = price["content"]
                             price = price.strip('\xe2\x82\xac ').replace(',','.')

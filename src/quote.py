@@ -2,7 +2,10 @@
 
 from rs.core import Rs 
 from farnell_api.core import Farnell_api
+from digikey_octopart.core import Digikey_octo
 import math
+
+
 
 import csv 
 
@@ -135,6 +138,48 @@ class Quote():
                             row.append(result['pku'][i])
                             row.append(result['URL'][i])
                             csvwriter.writerow(row)    
+                if 1:
+                    digikey_octo = Digikey_octo(intableItem['mpn'],1,0)
+                    self.progressWriter.printMsg(digikey_octo.getUrl())
+                    result = digikey_octo.parse()
+                    #if result['ausUSA']==[-1]:
+                    #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
+                    #    result = farnell_api.parse()   
+                    
+                    for i in range(len(result['ordercode'])):
+                        addLine=1; 
+ 
+                        if (str(result['stock'][i]).find('Reel') == -1):
+                            addLine=1;
+                        else:
+                            addLine=0;
+                        
+                        if self.maxMinVPE <= int(result['minVPE'][i]):
+                            addLine = 0
+
+                        if addLine:
+                            row = []
+                            row.append('0')
+                            row.append('DigiKey')
+                            row.append(0) 
+                            row.append(0)
+                            row.append(result['ordercode'][i])
+                            row.append(result['mpn'][i])
+                            row.append(result['manufacturer'][i])
+                            row.append(result['description'][i])
+                            row.append(result['minVPE'][i])
+                            row.append(result['pricebreaks'][i])
+                            row.append(result['prices'][i])
+                            row.append(result['stock'][i])
+                            #if cnt > 5:
+                            #  exit()
+                            if result['ausUSA'][i]:
+                                row.append('ausUSA')
+                            else:
+                                row.append('nichtAusUSA')
+                            row.append(result['pku'][i])
+                            row.append(result['URL'][i])
+                            csvwriter.writerow(row)                                
 
 
         

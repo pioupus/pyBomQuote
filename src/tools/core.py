@@ -247,7 +247,11 @@ class BOMQuoteData():
                 bricebreaks = row[9].strip('[] ')
                 print ('PKU: '+ quoteDataSet['sku']);
                 for pb in bricebreaks.split(', '):
+<<<<<<< HEAD
                     #print pb
+=======
+                    print sku +' "'+str(pb)+'"'
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                     pb = float(pb)
                     quoteDataSet['pricebreaks'].append(float(pb))
 
