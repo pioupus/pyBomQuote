@@ -138,8 +138,11 @@ class Rs(object):
                         #result = {'ordercode':['-1'], 'manufacturer':['-'], 'mpn':['-'], 'description':['-'], 'stock':[-1], 'pricebreaks':[[-1]], 'prices':[[-1]], 'minVPE':[-1], 'ausUSA':[-1],'URL':[self.seachURL],'supplier':['RS']}                    
                     else:
 <<<<<<< HEAD
+<<<<<<< HEAD
                         rows = rows.find_all('li', attrs={'itemprop':'priceSpecification'})
 =======
+=======
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                         
                         rows = rows.find_all('li')
 >>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
@@ -147,6 +150,7 @@ class Rs(object):
                         breaks_item = []
                         
                         for row in rows:
+<<<<<<< HEAD
 <<<<<<< HEAD
                             #print(row)
                             qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
@@ -158,6 +162,8 @@ class Rs(object):
                                 #print qty
                             else:
 =======
+=======
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                             if row['id'] == "emptyBox":
                                 continue
                             #print(row)
@@ -167,12 +173,21 @@ class Rs(object):
                                 qty = row.find('div', attrs={'itemprop':'eligibleQuantity'})
                                 if qty == None:
                                     continue
+<<<<<<< HEAD
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
+=======
 >>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                                 qty = qty.find('meta', attrs={'itemprop':'minValue'})
                                 if qty == None:
                                     continue
                                 qty = qty["content"]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+                            else:
+                                qty = qty.find('span').contents[0].encode('utf-8').strip()
+                            
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
 =======
                             else:
                                 qty = qty.find('span').contents[0].encode('utf-8').strip()
@@ -186,6 +201,7 @@ class Rs(object):
                             price = row.find('meta', attrs={'itemprop':'price'})
                             if price == None:
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 price = row.find('span', attrs={'id':'breakUnitPrice'}) 
                                 if price == None:
                                     continue
@@ -193,11 +209,16 @@ class Rs(object):
                                 price = price.contents[0].encode('utf-8').strip()
                                                            
 =======
+=======
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                                 price = row.find('span', attrs={'id':'breakUnitPrice'})
                                 if price == None:
                                     price = '-1'
                                 else:
                                     price = price.contents[0].encode('utf-8').strip()
+<<<<<<< HEAD
+>>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
+=======
 >>>>>>> 37dc8b37ed02b0710e4c57d9c1aa3e910dc36684
                             else:
                                 price = price["content"]
