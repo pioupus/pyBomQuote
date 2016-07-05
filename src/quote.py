@@ -63,7 +63,7 @@ class Quote():
                 row.append(intableItem['description'])
                 row.append(intableItem['footprint'])
                 csvwriter.writerow(row)
-                if 1:
+                if 0:
                     rs = Rs(intableItem['mpn'],1,0)
                     self.progressWriter.printMsg(rs.getUrl())
                     result = rs.parse() 

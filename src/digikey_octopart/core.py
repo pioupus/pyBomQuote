@@ -40,7 +40,7 @@ class Digikey_octo(object):
            
         queries = [
             {'mpn': MPN,
-             'seller': '2c3be9310496fffc',
+            # 'seller': '2c3be9310496fffc',
              'reference': 'ref1',
              }
             ]
@@ -59,6 +59,7 @@ class Digikey_octo(object):
         try:        
             sock = urllib2.urlopen(self.seachURL)                                    
             self.page = sock.read()
+            
             #print self.page
             response = json.loads(self.page)
             
