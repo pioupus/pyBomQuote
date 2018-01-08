@@ -85,9 +85,10 @@ class Digikey_octo(object):
                         self.digikey_item.append(item)
                         
                         for description in item['descriptions']:
-                            if description['attribution']['sources'][0]['name'] == 'Digi-Key':
-                                item['descriptions'] = description
-                                break;
+							if description['attribution']['sources'] != None:
+								if description['attribution']['sources'][0]['name'] == 'Digi-Key':
+									item['descriptions'] = description
+									break;
             
             
             #print(self.digikey_item[0]['offers'])
