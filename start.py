@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from os import sys, path
-reload(sys)
-sys.setdefaultencoding('utf8')
+#from importlib import reload
+#reload(sys)
+#sys.setdefaultencoding('utf8')
 searchpath = path.abspath(path.join(path.dirname( __file__ ), 'src/'))
 sys.path.append(searchpath)
 	
