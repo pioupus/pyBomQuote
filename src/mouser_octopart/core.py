@@ -9,9 +9,9 @@ Created on 15.04.2015
 import pprint
 import octopart_module.core
 
-class Digikey_octo(object):
+class Mouser_octo(object):
     def __init__(self, MPN, lagerndeProdukte,USAProdukte):
-        self.octo = octopart_module.core.octopart(MPN, lagerndeProdukte,USAProdukte,'Digi-Key')
+        self.octo = octopart_module.core.octopart(MPN, lagerndeProdukte,USAProdukte,'Mouser')
         
     def getPage(self):
         return self.octo.getPage()
@@ -29,7 +29,7 @@ class Digikey_octo(object):
             if packaging=="Custom Reel":
                 result["description"][index] = 'Digi-Reel: '+result["description"][index]
                 result['stock'][index] = str(result['stock'][index]) + ' / Digi-Reel'
-            result['URL'].append('http://www.digikey.de/product-search/de?keywords='+result['ordercode'][index])
+            result['URL'].append('http://www.mouser.de/product-search/de?keywords='+result['ordercode'][index])
             index = index+1
 
         return result

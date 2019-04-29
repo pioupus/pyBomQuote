@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from PySide import QtCore
-from PySide import QtGui
-from PySide.QtDeclarative import *
-from PySide import QtUiTools
+from PySide2 import QtCore,QtWidgets,QtGui
+
+#from PySide2.QtDeclarative import *
+from PySide2 import QtUiTools
 import os
 import sys
 import subprocess
@@ -20,7 +20,7 @@ BGN_COLOR_TOP_NODE_RED = QtGui.QBrush(QtGui.QColor(255, 51, 0))
 BGN_COLOR_TOP_NODE = QtGui.QBrush(QtCore.Qt.lightGray)
 # Our main window
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
    
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
@@ -35,10 +35,10 @@ class MainWindow(QtGui.QMainWindow):
             
         for bom in bqd:
             for quote in bom['quotes']:
-                node = QtGui.QTreeWidgetItem();
+                node = QtWidgets.QTreeWidgetItem();
                 node = quote['node']
                 if node is not '':
-                    tree = QtGui.QTreeWidgetItem();
+                    tree = QtWidgets.QTreeWidgetItem();
                     #print(quote['node'])
                     if node.checkState(0) == QtCore.Qt.Checked:
                         supplier = quote['supplier']
@@ -47,9 +47,11 @@ class MainWindow(QtGui.QMainWindow):
                             #print(csvOutPath)
                             csvFiles[supplier] = open(csvOutPath, "w")
                             if supplier.lower() == 'rs':
-								csvFiles[supplier].write('http://de.rs-online.com/web/ca/Warenkorb/ and click on "Mehrere Bestell-Nummern einfuegen"\n\n')
+                                csvFiles[supplier].write('http://de.rs-online.com/web/ca/Warenkorb/ and click on "Mehrere Bestell-Nummern einfuegen"\n\n')
                             if supplier.lower() == 'farnell':
-								csvFiles[supplier].write('http://de.farnell.com/webapp/wcs/stores/servlet/QuickOrderView?isQuickPaste=true&catalogId=15001&langId=-3&storeId=10161\n\n')
+                                csvFiles[supplier].write('http://de.farnell.com/webapp/wcs/stores/servlet/QuickOrderView?isQuickPaste=true&catalogId=15001&langId=-3&storeId=10161\n\n')
+                            if supplier.lower() == 'mouser':
+                                csvFiles[supplier].write('https://www.mouser.de/Bom/CopyPaste\n\n')								
 							#if supplier.lower() == 'digikey':
 							#	csvFiles[supplier].write('https://www.digikey.de/Classic/Ordering/FastAdd.aspx\n\n')            
                         qty = quote['opt_qty']
@@ -74,8 +76,14 @@ class MainWindow(QtGui.QMainWindow):
                             line=str(int(qty))+'\t'+quote['sku']+'\t'+ref+'\n'
                             #print(row_rs)
                             csvFiles[supplier].write(line)
+							
+                        if quote['supplier'].lower() == 'mouser':
+                            line=quote['sku']+'|'+str(int(qty))+'\n'
+                            #print(row_rs)
+                            csvFiles[supplier].write(line)							
         if 'DigiKey' in csvFiles:
             csvFiles['DigiKey'].write('\n\nhttps://www.digikey.de/classic/ordering/addpart.aspx\n\nand click on "zum Warenkorb hochladen"')
+			
         for csvfile in csvFiles:
             csvFiles[csvfile].close();
             editor = os.getenv('EDITOR')
@@ -83,9 +91,9 @@ class MainWindow(QtGui.QMainWindow):
                 os.system(editor + ' ' + csvFiles[csvfile].name)
             else:
                 if sys.platform == 'win32':
-    				callstr='"'+csvFiles[csvfile].name+'"'
-    				print(callstr)  
-    				os.startfile(callstr)
+                    callstr='"'+csvFiles[csvfile].name+'"'
+                    print(callstr)  
+                    os.startfile(callstr)
     				#subprocess.call(['start',callstr], shell=True)
 
 
@@ -121,11 +129,11 @@ class MainWindow(QtGui.QMainWindow):
         quote = self.getDBItemFromItem(item)['quote']
         url = quote['url']
         if 'http' not in url:
-	    url = 'http://'+url
+            url = 'http://'+url
         webbrowser.open(url, new=2, autoraise=True)
 
     def sigActionOpen_quote_file(self):
-        dialog = QtGui.QFileDialog(self);
+        dialog = QtWidgets.QFileDialog(self);
         dialog.setNameFilter("Quote Files (*.BomQuote);;All Files (*.*)")
         if dialog.exec_():
             fileName =  dialog.selectedFiles()[0]
@@ -140,13 +148,13 @@ class MainWindow(QtGui.QMainWindow):
             st = ''
             for A in mergeresult[0]:
                 st += A['mpn']+' '+A['ref']+'\n'
-            QtGui.QMessageBox.warning(self, "Quotes of dublicates are not identical.",
+            QtWidgets.QMessageBox.warning(self, "Quotes of dublicates are not identical.",
                                            'Quotes of dublicates are not identical. You can solve this by quoting BOMs again.\n'+st,
-                                           QtGui.QMessageBox.Ok )            
+                                           QtWidgets.QMessageBox.Ok )            
         
 
     def sigActionAdd_number_to_quantity_of_parts(self):
-        dialog = QtGui.QDialog(self);
+        dialog = QtWidgets.QDialog(self);
         loader = QtUiTools.QUiLoader()
         dialog = loader.load('gui/addqty.ui') 
         #dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose); 
@@ -160,7 +168,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def sigActionMultiplyQuote(self):
         ok = 0        
-        factor = QtGui.QInputDialog.getInt(self, "Factor for multiplication",
+        factor = QtWidgets.QInputDialog.getInt(self, "Factor for multiplication",
                                          'Factor for multiplication', value=1, minValue=0, maxValue=100);
         ok = factor[1]
         factor = factor[0]
@@ -222,7 +230,7 @@ class MainWindow(QtGui.QMainWindow):
         self.ui.btnSetQty.setVisible(0)
         
     def sigActionQuote_bom_into_file(self): 
-        dialog = QtGui.QFileDialog(self);
+        dialog = QtWidgets.QFileDialog(self);
         dialog.setNameFilter("Bom Files (*.csv);;All Files (*.*)")
         if dialog.exec_():
             fileName =  dialog.selectedFiles()[0]    
@@ -309,7 +317,7 @@ class MainWindow(QtGui.QMainWindow):
     def loadBOMQuote(self,bomQuoteData):
         bqd = bomQuoteData.getBomData()
         #bqd = bomQuoteData.bomData;
-        tree = QtGui.QTreeWidget();
+        tree = QtWidgets.QTreeWidget();
         tree = self.ui.treeBOM;
         tree.clear();
         tree.setColumnCount(4)
@@ -317,7 +325,7 @@ class MainWindow(QtGui.QMainWindow):
         for bom in bqd: 
             topNodeindex += 1
             #anzahl, MPN, Manufacturer, Beschreibung, ref.
-            top = QtGui.QTreeWidgetItem()
+            top = QtWidgets.QTreeWidgetItem()
             top.setText(0, 'MPN: '+bom['mpn']+'\n'+'Manuf.: '+bom['manufacturer']+'\nMenge: '+str(bom['menge'])) 
             top.setToolTip(0,str(topNodeindex)+';-1')            
             top.setFlags(top.flags() | QtCore.Qt.ItemIsUserCheckable)
@@ -347,7 +355,7 @@ class MainWindow(QtGui.QMainWindow):
             top.setText(3, bom['description']+'\n'+bom['footprint'])  
                 #top.setFirstItemColumnSpanned 
             self.ui.treeBOM.addTopLevelItem(top)
-            lowestPrice = sys.maxint
+            lowestPrice = sys.maxsize
             quoteIndex=-1
             childindex=0
             cheapestChild = None
@@ -359,7 +367,7 @@ class MainWindow(QtGui.QMainWindow):
                     continue
                 
                 #should be done with checkbox once
-                child = QtGui.QTreeWidgetItem()
+                child = QtWidgets.QTreeWidgetItem()
                 child.setText(0, quote['supplier']) #'supplier'
                 child.setText(1, quote['sku']) #'SUK'
                 child.setToolTip(0,str(topNodeindex)+';'+str(quoteIndex))
@@ -409,7 +417,7 @@ class MainWindow(QtGui.QMainWindow):
 def startApp():
      # Create the Qt Application
     
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     # Create and show the main window
     
     window = MainWindow()

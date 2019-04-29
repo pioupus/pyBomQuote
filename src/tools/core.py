@@ -75,7 +75,7 @@ def quotesEqual(a,b):
     if len(a) == len(b):
         for index,elementA in enumerate(a):
             if len(elementA) == len(b[index]):
-                for index_inner,elementA_inner in elementA.iteritems():
+                for index_inner,elementA_inner in elementA.items():
                     if index_inner == 'node':
                         continue
                     if index_inner == 'opt_price':
@@ -123,7 +123,7 @@ class BOMQuoteData():
                 
         for bomAIndex, bomA in enumerate(self.bomData):  
             #print('Menge '+str(bomA['menge']))
-            newQty = int(bomA['menge'])
+            newQty = int(str(bomA['menge']))
             if newQty == 0:
                 #print('skipped')
                 continue
@@ -132,7 +132,7 @@ class BOMQuoteData():
             #print('BomA: '+bomA['mpn'])
             
             for bomB in self.bomData[bomAIndex+1:]:
-                qty = int(bomB['menge'])
+                qty = int(str(bomB['menge']))
                 if qty > 0:
                     #print('BomB: '+bomB['mpn'])
                     if (bomA['mpn'] == bomB['mpn']) and (bomA['manufacturer'] == bomB['manufacturer']):
@@ -209,12 +209,12 @@ class BOMQuoteData():
                 quote['opt_qty'] = opt_price['qty']
                 
     def loadFromCSV(self,path):
-        csvreader = csv.reader(open(path, "rb"), delimiter="|")
+        csvreader = csv.reader(open(path, "r"), delimiter="|")
         for row in csvreader: 
             bomDataSet = {}
             if row[1] == 'orig':
-                bomDataSet['checked'] = int(row[0])
-                bomDataSet['menge'] = int(row[2])
+                bomDataSet['checked'] = int(str(row[0]))
+                bomDataSet['menge'] = int(str(row[2]))
                 bomDataSet['mpn'] = row[4]
                 bomDataSet['manufacturer'] = row[5]
                 bomDataSet['ref'] = row[3]
@@ -231,7 +231,7 @@ class BOMQuoteData():
                 quoteDataSet['sku'] = sku
                 stock = row[11]
                 if stock.isdigit():
-                    stock = int(stock);
+                    stock = int(str(stock))
                     stock = str(stock)
                 quoteDataSet['stock'] = stock
                 USA = row[12]
@@ -242,12 +242,13 @@ class BOMQuoteData():
                 quoteDataSet['description'] = row[7]
                 quoteDataSet['minVPE'] = row[8]
                 quoteDataSet['pku'] = row[13]
+                print(quoteDataSet['pku'])
                 quoteDataSet['pricebreaks'] = []
                 quoteDataSet['prices'] = []
                 bricebreaks = row[9].strip('[] ')
                 
                 for pb in bricebreaks.split(', '):
-                    print sku +' "'+str(pb)+'"'
+                    #print(sku +' "'+str(pb)+'"')
                     pb = float(pb)
                     quoteDataSet['pricebreaks'].append(float(pb))
                     

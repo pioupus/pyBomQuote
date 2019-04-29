@@ -3,6 +3,7 @@
 from rs.core import Rs 
 from farnell_api.core import Farnell_api
 from digikey_octopart.core import Digikey_octo
+from mouser_octopart.core import Mouser_octo
 import math
 
 
@@ -26,7 +27,7 @@ class Quote():
         self.intable = []
         self.excludeRLOrderNumbers = 1;
         self.maxMinVPE = 300
-        csvreader = csv.reader(open(self.csvPath, "rb"), delimiter=csvDelimiter)
+        csvreader = csv.reader(open(self.csvPath, "r"), delimiter=csvDelimiter)
         for row in csvreader: 
             intableItem = {'qty':[],'designator':[],'mpn':[],'manufacturer':[],'description':[],'libID':[]}
             intableItem['qty']=row[1]
@@ -44,7 +45,7 @@ class Quote():
         cnt = 0;
         #exit();
         if 1:
-            csvwriter = csv.writer(open(writePath, "wb"), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
+            csvwriter = csv.writer(open(writePath, "w",  newline=''), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
             for intableItem in self.intable:
                 #print(intableItem)
                 cnt = cnt+1;
@@ -107,8 +108,10 @@ class Quote():
                         if self.excludeRLOrderNumbers == 0:
                             addLine=1;
                         else:
-                            #print result['ordercode'][i].find('RL')
-                            if (result['ordercode'][i].find('RL') == -1):
+                            #print(result['ordercode'])
+                            #print(i)
+                            #print(result['ordercode'][i])
+                            if (str(result['ordercode'][i]).find('RL') == -1):
                                 addLine=1;
                             else:
                                 pass
@@ -179,7 +182,49 @@ class Quote():
                                 row.append('nichtAusUSA')
                             row.append(result['pku'][i])
                             row.append(result['URL'][i])
-                            csvwriter.writerow(row)                                
+                            csvwriter.writerow(row)     
+                if 1:
+                    mouser_octo = Mouser_octo(intableItem['mpn'],1,0)
+                    self.progressWriter.printMsg(mouser_octo.getUrl())
+                    result = mouser_octo.parse()
+                    #if result['ausUSA']==[-1]:
+                    #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
+                    #    result = farnell_api.parse()   
+                    
+                    for i in range(len(result['ordercode'])):
+                        addLine=1; 
+ 
+                        if (str(result['stock'][i]).find('Reel') == -1):
+                            addLine=1;
+                        else:
+                            addLine=0;
+                        
+                        if self.maxMinVPE <= int(result['minVPE'][i]):
+                            addLine = 0
+
+                        if addLine:
+                            row = []
+                            row.append('0')
+                            row.append('Mouser')
+                            row.append(0) 
+                            row.append(0)
+                            row.append(result['ordercode'][i])
+                            row.append(result['mpn'][i])
+                            row.append(result['manufacturer'][i])
+                            row.append(result['description'][i])
+                            row.append(result['minVPE'][i])
+                            row.append(result['pricebreaks'][i])
+                            row.append(result['prices'][i])
+                            row.append(result['stock'][i])
+                            #if cnt > 5:
+                            #  exit()
+                            if result['ausUSA'][i]:
+                                row.append('ausUSA')
+                            else:
+                                row.append('nichtAusUSA')
+                            row.append(result['pku'][i])
+                            row.append(result['URL'][i])
+                            csvwriter.writerow(row)    							
 
 
         

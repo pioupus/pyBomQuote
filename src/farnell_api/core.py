@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Created on 15.04.2015
@@ -7,10 +7,13 @@ Created on 15.04.2015
 '''
 
 import urllib
-import urllib2
-import urlparse
+from urllib.request import urlopen
+from urllib.request import HTTPError
+
+from urllib.parse import urlsplit, urlunsplit, quote, urlunparse, quote_plus
+
 from bs4 import BeautifulSoup
-from api_config_my import *
+import farnell_api.api_config_my
 
 def url_fix(s, charset='utf-8'):
     """Sometimes you get an URL by a user that just isn't a real
@@ -24,12 +27,10 @@ def url_fix(s, charset='utf-8'):
     :param charset: The target charset for the URL if the url was
                     given as unicode string.
     """
-    if isinstance(s, unicode):
-        s = s.encode(charset, 'ignore')
-    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    path = urllib.quote(path, '/%')
-    qs = urllib.quote_plus(qs, ':&=')
-    result = urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+    scheme, netloc, path, qs, anchor = urllib.parse.urlsplit(s)
+    path = urllib.parse.quote(path, '/%')
+    qs = urllib.parse.quote_plus(qs, ':&=')
+    result = urllib.parse.urlunsplit((scheme, netloc, path, qs, anchor))
     result = result.replace('#','%23')
     return result;
     
@@ -47,11 +48,11 @@ class Farnell_api(object):
            
         self.seachURL = 'http://api.element14.com/catalog/products'+\
             '?term=any:'+MPN+\
-            '&storeInfo.id='+API_STORE+\
+            '&storeInfo.id='+farnell_api.api_config_my.API_STORE+\
             '&callInfo.omitXmlSchema=false'+\
             '&callInfo.responseDataFormat=xml'+\
             '&callInfo.callback='+\
-            '&callInfo.apiKey='+API_KEY+\
+            '&callInfo.apiKey='+farnell_api.api_config_my.API_KEY+\
             '&resultsSettings.offset=0'+\
             '&resultsSettings.numberOfResults=20'+\
             '&resultsSettings.refinements.filters='+\
@@ -65,10 +66,10 @@ class Farnell_api(object):
         #print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
-            sock = urllib2.urlopen(self.seachURL)                                    
+            sock = urlopen(self.seachURL)                                    
             self.page = sock.read()
             sock.close()
-        except urllib2.HTTPError, err:
+        except HTTPError as err:
             print(err)
             self.downloadOK = 0
             with open("farnell_api.log", "ab") as logfile:
@@ -97,7 +98,7 @@ class Farnell_api(object):
             minVPE = product.find('ns1:translatedminimumorderquality').contents[0].encode('utf-8').strip()
             minVPE = int(minVPE)
             packSize = product.find('ns1:packsize').contents[0].encode('utf-8').strip()
-            URL = API_STORE+'/'+sku
+            URL = str(farnell_api.api_config_my.API_STORE)+'/'+str(sku)
             fromUSA = 1            
             for region in product.find('ns1:stock').find_all('ns1:regionalbreakdown'):
                 lvl = int(region.find('ns1:level').contents[0].encode('utf-8').strip())
@@ -122,13 +123,13 @@ class Farnell_api(object):
             result['pricebreaks'].append(breaks_item)
             result['prices'].append(prices_item)
                 
-            result['ordercode'].append(sku)
-            result['manufacturer'].append(manufacturer)
-            result['mpn'].append(mpn)
-            result['description'].append(description)
-            result['stock'].append(stock)
+            result['ordercode'].append(sku.decode())
+            result['manufacturer'].append(manufacturer.decode())
+            result['mpn'].append(mpn.decode())
+            result['description'].append(description.decode())
+            result['stock'].append(stock.decode())
             result['minVPE'].append(minVPE)
-            result['pku'].append(packSize)
+            result['pku'].append(packSize.decode())
             result['URL'].append(URL)
             result['ausUSA'].append(fromUSA)
             result['supplier'].append('Farnell')

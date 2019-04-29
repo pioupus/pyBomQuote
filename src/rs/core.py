@@ -1,13 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import urllib2
+#import urllib2
+from urllib.request import urlopen
 import re
 from bs4 import BeautifulSoup
-from string import maketrans
+#from string import maketrans
 from socket import error as socket_error
 
 import urllib
-import urlparse
+from urllib.parse import urlsplit, urlunsplit, quote_plus, quote
 
 def url_fix(s, charset='utf-8'):
     """Sometimes you get an URL by a user that just isn't a real
@@ -21,12 +22,11 @@ def url_fix(s, charset='utf-8'):
     :param charset: The target charset for the URL if the url was
                     given as unicode string.
     """
-    if isinstance(s, unicode):
-        s = s.encode(charset, 'ignore')
-    scheme, netloc, path, qs, anchor = urlparse.urlsplit(s)
-    path = urllib.quote(path, '/%')
-    qs = urllib.quote_plus(qs, ':&=')
-    return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
+
+    scheme, netloc, path, qs, anchor = urllib.parse.urlsplit(s)
+    path = urllib.parse.quote(path, '/%')
+    qs = urllib.parse.quote_plus(qs, ':&=')
+    return urllib.parse.urlunsplit((scheme, netloc, path, qs, anchor))
 
 
 
@@ -57,7 +57,7 @@ class Rs(object):
                 self.page = urllib2.urlopen(req).read() 
             except socket_error as serr:
                 self.downloadOK = 0
-                print "DownloadError: "+str(serr)
+                print("DownloadError: "+str(serr))
             if self.downloadOK:
                 break
 
@@ -97,7 +97,7 @@ class Rs(object):
                         description = 'Nicht verfuegbar'
                     else:
                         description = description.find('div').contents[0].encode('utf-8').strip()
-                        description = description.translate(maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
+                        description = description.translate(str.maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
                     minVPE = soup.find('div', attrs={'class':'addToCartRTQContainer'})
                     if minVPE == None:
                         minVPE = '-1'
@@ -191,7 +191,7 @@ class Rs(object):
                         description = description.find('a').contents[0].encode('utf-8').strip()
                     else:
                         description = description.contents[0].encode('utf-8').strip()
-                    description = description.translate(maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
+                    description = description.translate(str.maketrans('\xbc\xce\xc2\xb1', 'u  +')) 
                     fields = row.find_all('span', attrs={'class':'labelText'})
                     url = '';
                     mpn_found=0
