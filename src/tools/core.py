@@ -242,7 +242,7 @@ class BOMQuoteData():
                 quoteDataSet['description'] = row[7]
                 quoteDataSet['minVPE'] = row[8]
                 quoteDataSet['pku'] = row[13]
-                print(quoteDataSet['pku'])
+                #print(quoteDataSet['pku'])
                 quoteDataSet['pricebreaks'] = []
                 quoteDataSet['prices'] = []
                 bricebreaks = row[9].strip('[] ')

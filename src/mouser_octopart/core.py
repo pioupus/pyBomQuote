@@ -29,7 +29,7 @@ class Mouser_octo(object):
             if packaging=="Custom Reel":
                 result["description"][index] = 'Digi-Reel: '+result["description"][index]
                 result['stock'][index] = str(result['stock'][index]) + ' / Digi-Reel'
-            result['URL'].append('http://www.mouser.de/product-search/de?keywords='+result['ordercode'][index])
+            result['URL'].append('https://www.mouser.de/mvc/header/search?keyword='+result['ordercode'][index])
             index = index+1
 
         return result
