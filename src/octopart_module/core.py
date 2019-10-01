@@ -44,8 +44,11 @@ def findDescription(descriptions, seller):
             #print('attribution not found in')
             #pp = pprint.PrettyPrinter(indent=4)
             #pp.pprint(description)
-        #if 'sources' not in description['attribution']:
-        #    continue			
+        if 'sources' not in description['attribution']:
+            continue			
+        if description['attribution']['sources'] == None:
+            continue			
+			
         for source in description['attribution']['sources']:
             if source['name'].lower().strip() == seller:
                 #print ("found description")
