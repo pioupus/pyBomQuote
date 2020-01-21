@@ -45,7 +45,7 @@ class Quote():
         cnt = 0;
         #exit();
         if 1:
-            csvwriter = csv.writer(open(writePath, "w",  newline=''), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
+            csvwriter = csv.writer(open(writePath, "w",  newline='', encoding='utf-8'), delimiter="|" , quotechar='"', quoting=csv.QUOTE_ALL)
             for intableItem in self.intable:
                 #print(intableItem)
                 cnt = cnt+1;
