@@ -1,0 +1,103 @@
+{
+  "Errors": [],
+  "SearchResults": {
+    "NumberOfResult": 1,
+    "Parts": [
+      {
+        "Availability": "13217 Auf Lager",
+        "DataSheetUrl": "https://www.mouser.com/datasheet/2/447/PYu-RC_Group_51_RoHS_L_10-1664068.pdf",
+        "Description": "Dickfilmwiderst▒nde - SMD 1.2M OHM 1%",
+        "FactoryStock": "0",
+        "ImagePath": "https://www.mouser.com/images/yageo/images/RC_series_SPL.jpg",
+        "Category": "Dickfilmwiderst▒nde - SMD",
+        "LeadTime": "161 Tage",
+        "LifecycleStatus": "",
+        "Manufacturer": "Yageo",
+        "ManufacturerPartNumber": "RC0402FR-071M2L",
+        "Min": "1",
+        "Mult": "1",
+        "MouserPartNumber": "603-RC0402FR-071M2L",
+        "ProductAttributes": [
+          {
+            "AttributeName": "Verpackung",
+            "AttributeValue": "Cut Tape"
+          },
+          {
+            "AttributeName": "Verpackung",
+            "AttributeValue": "MouseReel"
+          },
+          {
+            "AttributeName": "Verpackung",
+            "AttributeValue": "Reel"
+          },
+          {
+            "AttributeName": "Standardpackungsmenge",
+            "AttributeValue": "10000"
+          }
+        ],
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0,085 ▒",
+            "Currency": "EUR"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0,01 ▒",
+            "Currency": "EUR"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0,003 ▒",
+            "Currency": "EUR"
+          }
+        ],
+        "AlternatePackagings": null,
+        "ProductDetailUrl": "https://eu.mouser.com/ProductDetail/Yageo/RC0402FR-071M2L?qs=sxZXDnvRBEiB7OoBtKbVRg%3D%3D",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant By Exemption",
+        "SuggestedReplacement": "",
+        "MultiSimBlue": 0,
+        "InfoMessages": [],
+        "ProductCompliance": [
+          {
+            "ComplianceName": "TARIC",
+            "ComplianceValue": "8533210000"
+          },
+          {
+            "ComplianceName": "BRHTS",
+            "ComplianceValue": "85332120"
+          },
+          {
+            "ComplianceName": "CAHTS",
+            "ComplianceValue": "8533210000"
+          },
+          {
+            "ComplianceName": "CNHTS",
+            "ComplianceValue": "8533211000"
+          },
+          {
+            "ComplianceName": "USHTS",
+            "ComplianceValue": "8533210030"
+          },
+          {
+            "ComplianceName": "JPHTS",
+            "ComplianceValue": "8533210000"
+          },
+          {
+            "ComplianceName": "KRHTS",
+            "ComplianceValue": "8533219000"
+          },
+          {
+            "ComplianceName": "MXHTS",
+            "ComplianceValue": "85332101"
+          },
+          {
+            "ComplianceName": "ECCN",
+            "ComplianceValue": "EAR99"
+          }
+        ]
+      }
+    ]
+  }
+}

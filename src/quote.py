@@ -2,8 +2,8 @@
 
 from rs.core import Rs 
 from farnell_api.core import Farnell_api
-from digikey_octopart.core import Digikey_octo
-from mouser_octopart.core import Mouser_octo
+from digikey_api.core import Digikey_api
+from mouser_api.core import Mouser_api
 import math
 
 
@@ -142,9 +142,9 @@ class Quote():
                             row.append(result['URL'][i])
                             csvwriter.writerow(row)    
                 if 1:
-                    digikey_octo = Digikey_octo(intableItem['mpn'],1,0)
-                    self.progressWriter.printMsg(digikey_octo.getUrl())
-                    result = digikey_octo.parse()
+                    digikey__api = Digikey_api(intableItem['mpn'],1,0)
+                    self.progressWriter.printMsg(digikey__api.getUrl())
+                    result = digikey__api.parse()
                     #if result['ausUSA']==[-1]:
                     #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
                     #    result = farnell_api.parse()   
@@ -184,9 +184,9 @@ class Quote():
                             row.append(result['URL'][i])
                             csvwriter.writerow(row)     
                 if 1:
-                    mouser_octo = Mouser_octo(intableItem['mpn'],1,0)
-                    self.progressWriter.printMsg(mouser_octo.getUrl())
-                    result = mouser_octo.parse()
+                    mouser_api = Mouser_api(intableItem['mpn'],1,0)
+                    self.progressWriter.printMsg(mouser_api.getUrl())
+                    result = mouser_api.parse()
                     #if result['ausUSA']==[-1]:
                     #    farnell_api = farnell_api(intableItem['mpn']+'+'+intableItem['manufacturer'],1,0)
                     #    result = farnell_api.parse()   

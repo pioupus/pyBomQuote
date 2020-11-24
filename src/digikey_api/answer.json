@@ -1,0 +1,449 @@
+{
+  "LimitedTaxonomy": {
+    "Children": [
+      {
+        "Children": [
+          {
+            "Children": [],
+            "ProductCount": 1,
+            "NewProductCount": 0,
+            "ParameterId": -8,
+            "ValueId": "58",
+            "Parameter": "Categories",
+            "Value": "Aluminum Capacitors"
+          }
+        ],
+        "ProductCount": 1,
+        "NewProductCount": 0,
+        "ParameterId": -8,
+        "ValueId": "3",
+        "Parameter": "Categories",
+        "Value": "Capacitors"
+      }
+    ],
+    "ProductCount": 1,
+    "NewProductCount": 0,
+    "ParameterId": -8,
+    "ValueId": "0",
+    "Parameter": "Categories",
+    "Value": "Out of Bounds"
+  },
+  "FilterOptions": [
+    {
+      "Values": [
+        {
+          "ValueId": "10",
+          "Value": "Panasonic Electronic Components"
+        }
+      ],
+      "ParameterId": -1,
+      "Parameter": "Manufacturer"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "3",
+          "Value": "Bulk"
+        }
+      ],
+      "ParameterId": 7,
+      "Parameter": "Packaging"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "189",
+          "Value": "NHG"
+        }
+      ],
+      "ParameterId": -5,
+      "Parameter": "Series"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "0",
+          "Value": "Active"
+        }
+      ],
+      "ParameterId": 1989,
+      "Parameter": "Part Status"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "65",
+          "Value": "1000µF"
+        }
+      ],
+      "ParameterId": 13,
+      "Parameter": "Capacitance"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "5",
+          "Value": "±20%"
+        }
+      ],
+      "ParameterId": 3,
+      "Parameter": "Tolerance"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "371",
+          "Value": "35V"
+        }
+      ],
+      "ParameterId": 63,
+      "Parameter": "Voltage Rating"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "233",
+          "Value": "-"
+        }
+      ],
+      "ParameterId": 724,
+      "Parameter": "ESR (Equivalent Series Resistance)"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "7",
+          "Value": "2000 Hrs @ 105°C"
+        }
+      ],
+      "ParameterId": 725,
+      "Parameter": "Lifetime @ Temp."
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "42",
+          "Value": "-55°C ~ 105°C"
+        }
+      ],
+      "ParameterId": 252,
+      "Parameter": "Operating Temperature"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "14",
+          "Value": "Polar"
+        }
+      ],
+      "ParameterId": 52,
+      "Parameter": "Polarization"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "19",
+          "Value": "General Purpose"
+        }
+      ],
+      "ParameterId": 405,
+      "Parameter": "Applications"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "3670",
+          "Value": "810mA @ 120Hz"
+        }
+      ],
+      "ParameterId": 1317,
+      "Parameter": "Ripple Current"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "89",
+          "Value": "-"
+        }
+      ],
+      "ParameterId": 60,
+      "Parameter": "Impedance"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "4",
+          "Value": "0.197\" (5.00mm)"
+        }
+      ],
+      "ParameterId": 508,
+      "Parameter": "Lead Spacing"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "13984",
+          "Value": "0.492\" Dia (12.50mm)"
+        }
+      ],
+      "ParameterId": 46,
+      "Parameter": "Size / Dimension"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "273",
+          "Value": "0.866\" (22.00mm)"
+        }
+      ],
+      "ParameterId": 1500,
+      "Parameter": "Height - Seated (Max)"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "4",
+          "Value": "-"
+        }
+      ],
+      "ParameterId": 884,
+      "Parameter": "Surface Mount Land Size"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "80",
+          "Value": "Through Hole"
+        }
+      ],
+      "ParameterId": 69,
+      "Parameter": "Mounting Type"
+    },
+    {
+      "Values": [
+        {
+          "ValueId": "11811",
+          "Value": "Radial, Can"
+        }
+      ],
+      "ParameterId": 16,
+      "Parameter": "Package / Case"
+    }
+  ],
+  "Products": [
+    {
+      "StandardPricing": [
+        {
+          "BreakQuantity": 1,
+          "UnitPrice": 0.78,
+          "TotalPrice": 0.78
+        },
+        {
+          "BreakQuantity": 10,
+          "UnitPrice": 0.593,
+          "TotalPrice": 5.93
+        },
+        {
+          "BreakQuantity": 25,
+          "UnitPrice": 0.5248,
+          "TotalPrice": 13.12
+        },
+        {
+          "BreakQuantity": 50,
+          "UnitPrice": 0.4928,
+          "TotalPrice": 24.64
+        },
+        {
+          "BreakQuantity": 100,
+          "UnitPrice": 0.4243,
+          "TotalPrice": 42.43
+        },
+        {
+          "BreakQuantity": 250,
+          "UnitPrice": 0.38324,
+          "TotalPrice": 95.81
+        },
+        {
+          "BreakQuantity": 500,
+          "UnitPrice": 0.3285,
+          "TotalPrice": 164.25
+        },
+        {
+          "BreakQuantity": 1000,
+          "UnitPrice": 0.28288,
+          "TotalPrice": 282.88
+        },
+        {
+          "BreakQuantity": 5000,
+          "UnitPrice": 0.25094,
+          "TotalPrice": 1254.7
+        }
+      ],
+      "RoHSStatus": "RoHS Compliant",
+      "LeadStatus": "Lead Free",
+      "Parameters": [
+        {
+          "ParameterId": 7,
+          "ValueId": "3",
+          "Parameter": "Packaging",
+          "Value": "Bulk"
+        },
+        {
+          "ParameterId": 1989,
+          "ValueId": "0",
+          "Parameter": "Part Status",
+          "Value": "Active"
+        },
+        {
+          "ParameterId": 13,
+          "ValueId": "65",
+          "Parameter": "Capacitance",
+          "Value": "1000µF"
+        },
+        {
+          "ParameterId": 3,
+          "ValueId": "5",
+          "Parameter": "Tolerance",
+          "Value": "±20%"
+        },
+        {
+          "ParameterId": 63,
+          "ValueId": "371",
+          "Parameter": "Voltage Rating",
+          "Value": "35V"
+        },
+        {
+          "ParameterId": 724,
+          "ValueId": "233",
+          "Parameter": "ESR (Equivalent Series Resistance)",
+          "Value": "-"
+        },
+        {
+          "ParameterId": 725,
+          "ValueId": "7",
+          "Parameter": "Lifetime @ Temp.",
+          "Value": "2000 Hrs @ 105°C"
+        },
+        {
+          "ParameterId": 252,
+          "ValueId": "42",
+          "Parameter": "Operating Temperature",
+          "Value": "-55°C ~ 105°C"
+        },
+        {
+          "ParameterId": 52,
+          "ValueId": "14",
+          "Parameter": "Polarization",
+          "Value": "Polar"
+        },
+        {
+          "ParameterId": 405,
+          "ValueId": "19",
+          "Parameter": "Applications",
+          "Value": "General Purpose"
+        },
+        {
+          "ParameterId": 1317,
+          "ValueId": "3670",
+          "Parameter": "Ripple Current",
+          "Value": "810mA @ 120Hz"
+        },
+        {
+          "ParameterId": 60,
+          "ValueId": "89",
+          "Parameter": "Impedance",
+          "Value": "-"
+        },
+        {
+          "ParameterId": 508,
+          "ValueId": "4",
+          "Parameter": "Lead Spacing",
+          "Value": "0.197\" (5.00mm)"
+        },
+        {
+          "ParameterId": 46,
+          "ValueId": "13984",
+          "Parameter": "Size / Dimension",
+          "Value": "0.492\" Dia (12.50mm)"
+        },
+        {
+          "ParameterId": 1500,
+          "ValueId": "273",
+          "Parameter": "Height - Seated (Max)",
+          "Value": "0.866\" (22.00mm)"
+        },
+        {
+          "ParameterId": 884,
+          "ValueId": "4",
+          "Parameter": "Surface Mount Land Size",
+          "Value": "-"
+        },
+        {
+          "ParameterId": 69,
+          "ValueId": "80",
+          "Parameter": "Mounting Type",
+          "Value": "Through Hole"
+        },
+        {
+          "ParameterId": 16,
+          "ValueId": "11811",
+          "Parameter": "Package / Case",
+          "Value": "Radial, Can"
+        }
+      ],
+      "ProductUrl": "/product-detail/en/panasonic-electronic-components/ECA-1VHG102/P5555-ND/245154",
+      "PrimaryDatasheet": "https://industrial.panasonic.com/cdbs/www-data/pdf/RDF0000/ABA0000C1215.pdf",
+      "PrimaryPhoto": "http://media.digikey.com/Photos/Panasonic%20Photos/NHG12-SERIES.jpg",
+      "PrimaryVideo": "",
+      "Series": {
+        "ParameterId": -5,
+        "ValueId": "189",
+        "Parameter": "Series",
+        "Value": "NHG"
+      },
+      "ManufacturerLeadWeeks": "14 weeks",
+      "ManufacturerPageUrl": "https://www.digikey.com/en/supplier-centers/p/panasonic",
+      "ProductStatus": "Active",
+      "AlternatePackaging": [],
+      "DetailedDescription": null,
+      "ReachStatus": null,
+      "ExportControlClassNumber": null,
+      "HTSUSCode": null,
+      "TariffDescription": null,
+      "MoistureSensitivityLevel": "",
+      "ManufacturerPartNumber": "ECA-1VHG102",
+      "MinimumOrderQuantity": 1,
+      "NonStock": false,
+      "Packaging": {
+        "ParameterId": 7,
+        "ValueId": "3",
+        "Parameter": "Packaging",
+        "Value": "Bulk"
+      },
+      "QuantityAvailable": 8888,
+      "DigiKeyPartNumber": "P5555-ND",
+      "ProductDescription": "CAP ALUM 1000UF 20% 35V RADIAL",
+      "UnitPrice": 78000,
+      "Manufacturer": {
+        "ParameterId": 0,
+        "ValueId": "10",
+        "Parameter": "",
+        "Value": "Panasonic Electronic Components"
+      },
+      "ManufacturerPublicQuantity": 0,
+      "QuantityOnOrder": 0,
+      "DKPlusRestriction": false,
+      "SupplierDirectShip": false
+    }
+  ],
+  "ProductsCount": 1,
+  "ExactManufacturerProductsCount": 0,
+  "ExactManufacturerProducts": [],
+  "ExactDigiKeyProduct": null,
+  "SearchLocaleUsed": {
+    "Site": "US",
+    "Language": "en",
+    "Currency": "USD",
+    "ShipToCountry": ""
+  }
+}
