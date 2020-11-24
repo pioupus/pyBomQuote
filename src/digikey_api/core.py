@@ -38,7 +38,7 @@ class Digikey_api(object):
     def __init__(self, MPN, lagerndeProdukte,USAProdukte):
         self.lagerndeProdukte = lagerndeProdukte
         self.USAProdukte = USAProdukte
-        searchString = MPN;
+        self.MPN = MPN
         os.environ['DIGIKEY_CLIENT_ID'] = digikey_api.api_config_my.DIGIKEY_CLIENT_ID
         os.environ['DIGIKEY_CLIENT_SECRET'] = digikey_api.api_config_my.DIGIKEY_CLIENT_SECRET
         os.environ['DIGIKEY_CLIENT_SANDBOX'] = 'False'
@@ -49,35 +49,12 @@ class Digikey_api(object):
       #  part = digikey.product_details(dkpn)
 
 		# Search for parts 
+        print("Digikey request for part: "+MPN)
         search_request = KeywordSearchRequest(keywords=MPN, record_count=10)
         self.page_result = digikey.keyword_search(body=search_request)
 
-        for product in self.page_result.products:
-            print(product.manufacturer.value)
-            print(product.manufacturer_part_number)
-            print(product.digi_key_part_number)
-            if product.detailed_description != None:
-                print(product.product_description + "     " +product.detailed_description)
-            else:
-                print(product.product_description)
-            print(product.quantity_available)
-            
-            prices_item = []
-            breaks_item = []
-            
-            for pricing in product.standard_pricing:
-                qty = pricing.break_quantity
-                qty = int(qty)
-                breaks_item.append(float(qty))
-
-                price = pricing.unit_price
-                price = float(price)
-                prices_item.append(float(price))
-            
-            print(breaks_item)
-            print(prices_item)
-            
         self.seachURL = ""
+        print("Digikey request finished")    
         #print("result:")
         #print(result)
         #result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
@@ -89,9 +66,10 @@ class Digikey_api(object):
         return ""
     
     def getUrl(self):
-        return self.seachURL
+        return self.MPN
     
     def parse(self):
+        print("Parsing for Digikey Part: "+self.MPN)
         USD_FACTOR = 0.0
         currency = self.page_result.search_locale_used.currency
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[], 'packaging':[]}
@@ -116,14 +94,14 @@ class Digikey_api(object):
             
             prices_item = []
             breaks_item = []
-            
-            if "US" in currency:
-                if USD_FACTOR == 0.0:
-                    USD_FACTOR = getUSDCurrencyValue()
-                    CURR_FAC = 1.0
-            elif "EUR" in currency:
-                    CURR_FAC = 1.0
-                    
+            CURR_FAC = 1.0
+            #if "US" in currency:
+            #    if USD_FACTOR == 0.0:
+            #        USD_FACTOR = getUSDCurrencyValue()
+            #        CURR_FAC = 1.0
+            #elif "EUR" in currency:
+            #        CURR_FAC = 1.0
+            #        
             for pricing in product.standard_pricing:
                 qty = pricing.break_quantity
                 qty = int(qty)
@@ -153,7 +131,7 @@ class Digikey_api(object):
             result['URL'].append(URL)
             result['ausUSA'].append(fromUSA)
             result['supplier'].append('Digikey')
-            
+        print("Part parsing Digikey finished")     
         return result
         
 

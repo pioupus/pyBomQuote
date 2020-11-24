@@ -25,11 +25,11 @@ class Mouser_api(object):
         data = {"SearchByPartRequest": {"mouserPartNumber":MPN, "partSearchOptions": ""}}
         params = {'apiKey': mouser_api.api_config_my.API_KEY}
 
-        
+        print("Mouser request for part: "+MPN)
         response = requests.post(url, params=params, json=data)
         self.page_result = response.json()
         self.page = response.text
-        
+        print("Mouser request finished")  
 
             
         
@@ -40,16 +40,18 @@ class Mouser_api(object):
         return self.seachURL
     
     def parse(self):
-
+        print("Parsing for Mouser Part: "+self.MPN)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
-        #print(self.page_result)
+        print(self.page_result)
         for product in self.page_result["SearchResults"]["Parts"]:
             #print product
             sku = product["MouserPartNumber"].encode('utf-8').strip()
             manufacturer = product["Manufacturer"].encode('utf-8').strip()
             mpn = product["ManufacturerPartNumber"].encode('utf-8').strip()
             description = product["Description"].encode('utf-8').strip()
-            stock = product["Availability"].encode('utf-8').strip()
+            stock = "0".encode('utf-8').strip()
+            if "Availability" in product:
+                stock = product["Availability"].encode('utf-8').strip()
             minVPE = product["Min"].encode('utf-8').strip()
             minVPE = int(minVPE)
             packSize =product["Mult"].encode('utf-8').strip()
@@ -83,7 +85,7 @@ class Mouser_api(object):
             result['URL'].append(URL)
             result['ausUSA'].append(0)
             result['supplier'].append('Mouser')
-            
+        print("Part parsing Mouser finished")         
         return result
         
 

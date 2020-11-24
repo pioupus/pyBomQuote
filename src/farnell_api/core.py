@@ -60,7 +60,7 @@ class Farnell_api(object):
 
 #http://api.element14.com/catalog/products?term=any%3Afuse&&storeInfo.id=de.farnell.com&callInfo.omitXmlSchema=false&callInfo.responseDataFormat=json&callInfo.callback=&callInfo.apiKey=szrm7kzwd28w5ce5s828gzvm&resultsSettings.offset=0&resultsSettings.numberOfResults=1&resultsSettings.refinements.filters=&resultsSettings.responseGroup=prices
 #http://api.element14.com/catalog/products?term=any%3Afuse&storeInfo.id=uk.farnell.com&resultsSettings.offset=0&resultsSettings.numberOfResults=1&resultsSettings.refinements.filters=&resultsSettings.responseGroup=prices&callInfo.omitXmlSchema=false&callInfo.callback=&callInfo.responseDataFormat=json&callinfo.apiKey=gd8n8b2kxqw6jq5mutsbrvur
-
+        print("Farnell request for part: "+MPN)
         self.seachURL = url_fix(self.seachURL)
         
         #print(self.seachURL)
@@ -76,7 +76,7 @@ class Farnell_api(object):
                 logfile.write(str(err)+'\n')
                 logfile.write(MPN+'\n')
                 logfile.write(self.seachURL+'\n\n')
-            
+        print("Farnell request finished")    
         
     def getPage(self):
         return self.page
@@ -85,6 +85,7 @@ class Farnell_api(object):
         return self.seachURL
     
     def parse(self):
+        print("Parsing for Farnell Part: "+self.MPN)
         soup = BeautifulSoup(self.page)
         products = soup.find_all('ns1:products')
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'pku':[], 'ausUSA':[],'URL':[],'supplier':[]}
@@ -133,7 +134,7 @@ class Farnell_api(object):
             result['URL'].append(URL)
             result['ausUSA'].append(fromUSA)
             result['supplier'].append('Farnell')
-            
+        print("Part parsing Farnell finished")         
         return result
         
 
