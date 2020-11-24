@@ -246,7 +246,8 @@ class BOMQuoteData():
                 quoteDataSet['pricebreaks'] = []
                 quoteDataSet['prices'] = []
                 bricebreaks = row[9].strip('[] ')
-                
+                if bricebreaks == "":
+                    continue
                 for pb in bricebreaks.split(', '):
                     #print(sku +' "'+str(pb)+'"')
                     pb = float(pb)
