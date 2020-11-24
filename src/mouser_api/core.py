@@ -82,7 +82,7 @@ class Mouser_api(object):
             result['stock'].append(stock.decode())
             result['minVPE'].append(minVPE)
             result['pku'].append(packSize.decode())
-            result['URL'].append(URL)
+            result['URL'].append(URL.decode())
             result['ausUSA'].append(0)
             result['supplier'].append('Mouser')
         print("Part parsing Mouser finished")         
