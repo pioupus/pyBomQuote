@@ -51,7 +51,7 @@ def getRealPrice(qtyOrig,minVPE,pricelist,pricebreaks,pku):
         pb = pricebreaks[pindex-1]
         
         if (minVPE < 0) or (qty < 0) or (pricelist[0] < 0) or pricebreaks[0] < 0:
-            realPrice[0]['price'] = sys.maxint
+            realPrice[0]['price'] = float("inf")
             realPrice[0]['qty'] = qty
             realPrice[1]['price'] =         realPrice[0]['price']
             realPrice[1]['qty'] =    realPrice[0]['qty']
@@ -195,6 +195,11 @@ class BOMQuoteData():
                 prices = quote['prices']
                 minVPE = quote['minVPE']
                 pku = int(quote['pku'])
+                if float(minVPE) == 0.0:
+                    minVPE = -1.0
+                if float(pku) == 0.0:
+                    pku = -1.0
+                    
                 realPrice = getRealPrice(qty,minVPE,prices,pb,pku );
                 opt_price = getBestPrice(realPrice, tolerance=0.5)
                 if 0:
