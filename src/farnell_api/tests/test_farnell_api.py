@@ -48,7 +48,18 @@ class Test(unittest.TestCase):
             with open("farnell_LT6220CS5_TRMPBF.xml", "wb") as myfile:
                 myfile.write(page)
             result = farnell.parse()
-            print(result)            
+            print(result)   
+            
+    def testMCP4661T(self):
+        if 1:
+            from farnell_api.core import Farnell_api
+            farnell = Farnell_api('MCP4661T-103E/ML',1,0)
+            page= farnell.getPage()
+            with open("farnell_MCP4661T.xml", "wb") as myfile:
+                myfile.write(page)
+            result = farnell.parse()
+            print(result)  
+          
 
 if __package__ is None:
     from os import sys, path

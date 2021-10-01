@@ -10,7 +10,7 @@ import urllib
 from urllib.request import urlopen
 from urllib.request import HTTPError
 
-from urllib.parse import urlsplit, urlunsplit, quote, urlunparse, quote_plus
+from urllib.parse import urlsplit, urlunsplit, quote, urlunparse, quote_plus, urlencode
 
 from bs4 import BeautifulSoup
 import farnell_api.api_config_my
@@ -36,6 +36,8 @@ def url_fix(s, charset='utf-8'):
     
 
 
+
+
 class Farnell_api(object):
     def __init__(self, MPN, lagerndeProdukte,USAProdukte):
         self.lagerndeProdukte = lagerndeProdukte
@@ -45,25 +47,37 @@ class Farnell_api(object):
         self.downloadOK = 1
         self.page = ''
         searchString = MPN;
-           
-        self.seachURL = 'http://api.element14.com/catalog/products'+\
-            '?term=any:'+MPN+\
-            '&storeInfo.id='+farnell_api.api_config_my.API_STORE+\
-            '&callInfo.omitXmlSchema=false'+\
-            '&callInfo.responseDataFormat=xml'+\
-            '&callInfo.callback='+\
-            '&callInfo.apiKey='+farnell_api.api_config_my.API_KEY+\
-            '&resultsSettings.offset=0'+\
-            '&resultsSettings.numberOfResults=20'+\
-            '&resultsSettings.refinements.filters='+\
-            '&resultsSettings.responseGroup=prices,inventory'
+        payload = {
+            'term':"any:"+MPN,
+            'storeInfo.id':farnell_api.api_config_my.API_STORE,
+            'callInfo.omitXmlSchema':'false',
+            'callInfo.responseDataFormat':'xml',
+            'callInfo.callback':'',
+            'callInfo.apiKey':farnell_api.api_config_my.API_KEY,
+            'resultsSettings.offset':'0',
+            'resultsSettings.numberOfResults':'20',
+            'resultsSettings.refinements.filters:':'',
+            'resultsSettings.responseGroup':'prices,inventory'
+            };   
+        self.seachURL = 'http://api.element14.com/catalog/products?'+urlencode(payload, quote_via=quote_plus)
+        #self.seachURL = 'http://api.element14.com/catalog/products'+\
+        #    '?term=any:'+MPN+\
+        #    '&storeInfo.id='+farnell_api.api_config_my.API_STORE+\
+        #   '&callInfo.omitXmlSchema=false'+\
+        #    '&callInfo.responseDataFormat=xml'+\
+        #    '&callInfo.callback='+\
+        #    '&callInfo.apiKey='+farnell_api.api_config_my.API_KEY+\
+        #    '&resultsSettings.offset=0'+\
+        #    '&resultsSettings.numberOfResults=20'+\
+        #    '&resultsSettings.refinements.filters='+\
+        #    '&resultsSettings.responseGroup=prices,inventory'
 
 #http://api.element14.com/catalog/products?term=any%3Afuse&&storeInfo.id=de.farnell.com&callInfo.omitXmlSchema=false&callInfo.responseDataFormat=json&callInfo.callback=&callInfo.apiKey=szrm7kzwd28w5ce5s828gzvm&resultsSettings.offset=0&resultsSettings.numberOfResults=1&resultsSettings.refinements.filters=&resultsSettings.responseGroup=prices
 #http://api.element14.com/catalog/products?term=any%3Afuse&storeInfo.id=uk.farnell.com&resultsSettings.offset=0&resultsSettings.numberOfResults=1&resultsSettings.refinements.filters=&resultsSettings.responseGroup=prices&callInfo.omitXmlSchema=false&callInfo.callback=&callInfo.responseDataFormat=json&callinfo.apiKey=gd8n8b2kxqw6jq5mutsbrvur
         print("Farnell request for part: "+MPN)
-        self.seachURL = url_fix(self.seachURL)
+        #self.seachURL = url_fix(self.seachURL)
         
-        #print(self.seachURL)
+        print(self.seachURL)
         result = {'ordercode':[], 'manufacturer':[], 'mpn':[], 'description':[], 'stock':[], 'pricebreaks':[], 'prices':[], 'minVPE':[], 'ausUSA':[],'URL':[],'supplier':[]}
         try:        
             sock = urlopen(self.seachURL)                                    
