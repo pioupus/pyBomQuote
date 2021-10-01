@@ -48,7 +48,7 @@ class Farnell_api(object):
         self.page = ''
         searchString = MPN;
         payload = {
-            'term':"any:"+MPN,
+            'term':"any:"+MPN.replace("/","-"),#if there is a %2f or / we get an internal server error from farnell
             'storeInfo.id':farnell_api.api_config_my.API_STORE,
             'callInfo.omitXmlSchema':'false',
             'callInfo.responseDataFormat':'xml',
@@ -56,7 +56,7 @@ class Farnell_api(object):
             'callInfo.apiKey':farnell_api.api_config_my.API_KEY,
             'resultsSettings.offset':'0',
             'resultsSettings.numberOfResults':'20',
-            'resultsSettings.refinements.filters:':'',
+            'resultsSettings.refinements.filters':'',
             'resultsSettings.responseGroup':'prices,inventory'
             };   
         self.seachURL = 'http://api.element14.com/catalog/products?'+urlencode(payload, quote_via=quote_plus)
